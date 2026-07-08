@@ -376,40 +376,45 @@
     }
 
 
+
+
     .crossword-note{
       max-width:560px;
-      margin:0 auto 14px;
+      margin:0 auto 16px;
       text-align:center;
       color:var(--ink2);
       font-family:"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
-      font-size:.9rem;
+      font-size:.92rem;
       letter-spacing:.04em;
-      text-shadow:0 0 8px rgba(255,238,202,.28);
+      text-shadow:0 0 10px rgba(255,238,202,.35);
     }
     .crossword{
       width:max-content;
       max-width:100%;
-      margin:6px auto 18px;
+      margin:10px auto 22px;
       display:grid;
-      gap:5px;
+      gap:6px;
       justify-content:center;
+      padding:20px 12px;
+      border:1px solid rgba(255,245,222,.20);
+      box-shadow:0 0 28px rgba(255,230,174,.16), inset 0 0 28px rgba(255,238,202,.025);
+      background:rgba(255,238,202,.018);
     }
     .cw-row{
       display:flex;
       justify-content:center;
-      gap:5px;
+      gap:6px;
     }
     .cw-cell{
-      width:39px;
-      height:39px;
-      border:1px solid rgba(255,245,222,.58);
+      width:38px;
+      height:38px;
+      border:1px solid rgba(255,245,222,.42);
       display:grid;
       place-items:center;
-      color:var(--ink2);
-      box-shadow:0 0 10px rgba(255,230,174,.09), inset 0 0 10px rgba(255,238,202,.025);
+      color:transparent;
+      box-shadow:0 0 10px rgba(255,230,174,.08), inset 0 0 10px rgba(255,238,202,.02);
+      background:rgba(255,255,255,.01);
       font-family:"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
-      font-size:.86rem;
-      line-height:1;
       position:relative;
     }
     .cw-cell.empty{
@@ -418,31 +423,27 @@
       background:transparent;
     }
     .cw-cell.key{
-      border-color:rgba(255,245,222,.95);
-      background:rgba(255,238,202,.09);
-      box-shadow:var(--glow), inset 0 0 14px rgba(255,238,202,.06);
-    }
-    .cw-num{
-      position:absolute;
-      top:3px;
-      left:5px;
-      font-size:.62rem;
-      color:var(--ink);
-      text-shadow:var(--glow);
+      border-color:rgba(255,250,230,.98);
+      background:rgba(255,238,202,.18);
+      box-shadow:
+        0 0 10px rgba(255,245,222,.95),
+        0 0 28px rgba(255,226,174,.72),
+        0 0 52px rgba(255,210,145,.36),
+        inset 0 0 18px rgba(255,238,202,.12);
     }
     .cw-clues{
       text-align:left;
-      max-width:440px;
+      max-width:560px;
       margin:0 auto;
       font-family:"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
-      font-size:.92rem;
-      line-height:1.8;
+      font-size:.94rem;
+      line-height:1.85;
       color:var(--ink2);
-      text-shadow:0 0 8px rgba(255,238,202,.28);
+      text-shadow:0 0 8px rgba(255,238,202,.30);
     }
     .cw-clues div{
       border-top:1px solid rgba(255,238,202,.14);
-      padding:6px 0;
+      padding:7px 4px;
     }
 
     @media (max-width:420px){
@@ -484,27 +485,42 @@
           `<p>最初の展示室には、箱がひとつだけ置かれていた。</p><p>古い木箱で、ふたには小さな傷がいくつもある。開けようと思えば開けられそうなのに、なぜか誰も開けなかったような箱だった。</p>`,
           `<p>中には、未使用のノート、削られていない鉛筆、開封されなかった絵の具、買っただけのペン、最初のページだけ日付が書かれた手帳が入っている。</p><div class="bracket">始める前なら、まだ下手じゃない。<br>始める前なら、まだ負けていない。<br>だからこの箱は、ずっと閉じられていました。</div>`
         ],
-        puzzleStory:`<p>箱の底には、四角いマスがつながった紙が入っていた。</p><p>リストの五つの言葉をすべて埋めると、番号のついた光るマスだけに文字が残るらしい。</p>`,
-        quote:`クロスワードを埋めて、<br>1〜4のマスを順番に読んでください。`,
-        clue:`<p class="crossword-note">リストの言葉をすべて埋めよう。<br>1〜4を順に読むと答えになります。</p>
+        puzzleStory:`<p>箱の底には、言葉が交差した紙が入っていた。</p><p>五つの言葉をすべて埋めると、光るマスにだけ、別の名前が残るらしい。</p>`,
+        quote:`リストの言葉をすべて埋めて、<br>光るマスだけを読んでください。`,
+        clue:`<p class="crossword-note">どこに何が入るかは、<br>マスの形と交差する文字から考えてください。</p>
           <div class="crossword" aria-label="箱のクロスワード">
             <div class="cw-row">
-              <span class="cw-cell"></span>
-              <span class="cw-cell"></span>
-              <span class="cw-cell key"><span class="cw-num">1</span></span>
               <span class="cw-cell empty"></span>
               <span class="cw-cell empty"></span>
-            </div>
-            <div class="cw-row">
-              <span class="cw-cell empty"></span>
-              <span class="cw-cell key"><span class="cw-num">3</span></span>
-              <span class="cw-cell key"><span class="cw-num">2</span></span>
               <span class="cw-cell empty"></span>
               <span class="cw-cell empty"></span>
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell key"></span>
             </div>
             <div class="cw-row">
               <span class="cw-cell empty"></span>
               <span class="cw-cell empty"></span>
+              <span class="cw-cell key"></span>
+              <span class="cw-cell"></span>
+              <span class="cw-cell"></span>
+              <span class="cw-cell"></span>
+              <span class="cw-cell key"></span>
+            </div>
+            <div class="cw-row">
+              <span class="cw-cell key"></span>
+              <span class="cw-cell"></span>
+              <span class="cw-cell"></span>
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell"></span>
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell"></span>
+            </div>
+            <div class="cw-row">
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell empty"></span>
               <span class="cw-cell"></span>
               <span class="cw-cell"></span>
               <span class="cw-cell"></span>
@@ -512,19 +528,21 @@
             <div class="cw-row">
               <span class="cw-cell empty"></span>
               <span class="cw-cell empty"></span>
-              <span class="cw-cell key"><span class="cw-num">4</span></span>
+              <span class="cw-cell empty"></span>
               <span class="cw-cell empty"></span>
               <span class="cw-cell"></span>
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell empty"></span>
             </div>
           </div>
           <div class="cw-clues">
-            <div>A　ノートを置いて書く家具。</div>
-            <div>B　紙をとめる小さな針。</div>
-            <div>C　煙が外へ出ていくところ。</div>
-            <div>D　時間を見るもの。</div>
-            <div>E　座るもの。</div>
+            <div>・映画をみるばしょ</div>
+            <div>・夜になると街の灯りがともる</div>
+            <div>・忘れないように固定して</div>
+            <div>・最後の一撃</div>
+            <div>・積み上げてお城をつくった</div>
           </div>`,
-        hint:"Aは「つくえ」、Bは「ぴん」、Cは「えんとつ」、Dは「とけい」、Eは「いす」。番号のマスを1から順番に読むと、箱の中に入っていたものになります。",
+        hint:"入る言葉は「えいがかん」「がいとう」「ぴんどめ」「とどめ」「つみき」。光るマスだけを読むと、箱の中に入っていたものになります。",
         after:[
           `<p>答えを入力すると、箱のふたが少しだけ開いた。</p><p>中に入っていた鉛筆が一本、ころんと転がる。</p><div class="quote-box">閲覧済み</div>`,
           `<p>どこからか、受付のだるまの声が聞こえた。</p><p>「書かなかったものは、まだ消えていません。芯が少し丸くなっただけです」</p><p>少し腹が立った。でも、少しだけ安心もした。</p>`
