@@ -61,7 +61,7 @@
 
     .app{
       width:min(100%,680px);
-      min-height:100svh;
+      min-height:100dvh;
       margin:0 auto;
       padding:18px 18px 38px;
       position:relative;
@@ -141,9 +141,10 @@
       animation:fade .35s ease both;
     }
     .screen.active{display:block}
+    .screen.center.active{display:flex}
 
     .center{
-      min-height:100svh;
+      min-height:100dvh;
       display:flex;
       flex-direction:column;
       align-items:center;
@@ -482,7 +483,7 @@
       </div>
     </div>
 
-    <section class="screen center active" id="titleScreen">
+    <section class="screen center active" id="titleScreen" style="display:flex;">
       <div class="title-box">
         <div class="title-grid" aria-label="未提出博覧会">
           <span>未</span><span>提</span>
@@ -738,11 +739,21 @@
     }
 
     function show(id){
-      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-      $(id).classList.add("active");
-      document.body.classList.toggle("is-title", id === "titleScreen");
-      $("topbar").classList.toggle("hidden", id === "titleScreen");
-      window.scrollTo({top:0, behavior:"smooth"});
+      document.querySelectorAll(".screen").forEach(s => {
+        s.classList.remove("active");
+        s.style.display = "none";
+      });
+
+      const target = $(id);
+      target.classList.add("active");
+      target.style.display = id === "titleScreen" ? "flex" : "block";
+
+      const isTitle = id === "titleScreen";
+      document.body.classList.toggle("is-title", isTitle);
+      $("topbar").classList.toggle("hidden", isTitle);
+      $("topbar").style.display = isTitle ? "none" : "block";
+
+      window.scrollTo(0, 0);
       updateProgress();
     }
 
@@ -910,7 +921,7 @@
           const gain = audioCtx.createGain();
           osc.type = i === 0 ? "sine" : "triangle";
           osc.frequency.setValueAtTime(freq,audioCtx.currentTime);
-          gain.gain.setValueAtTime(i===0?.65:.2,audioCtx.currentTime);
+          gain.gain.setValueAtTime(i === 0 ? 0.65 : 0.2, audioCtx.currentTime);
           osc.connect(gain);
           gain.connect(master);
           osc.start();
