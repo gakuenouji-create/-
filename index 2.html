@@ -1,0 +1,949 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>未提出博覧会</title>
+  <meta name="description" content="まだ何者にもなっていない人、入場無料。スマホで遊べる物語謎解きゲーム。" />
+  <style>
+    :root{
+      --bg:#050505;
+      --panel:rgba(10,10,12,.72);
+      --panel2:rgba(255,245,222,.055);
+      --line:rgba(255,238,202,.28);
+      --line2:rgba(255,238,202,.16);
+      --ink:#fff2d7;
+      --ink2:#d9c9a8;
+      --muted:#938975;
+      --gold:#ffe6ae;
+      --gold2:#b48b52;
+      --ok:#b6e6aa;
+      --ng:#ffafa6;
+      --shadow:0 0 34px rgba(255,226,174,.13), 0 30px 90px rgba(0,0,0,.75);
+      --glow:0 0 6px rgba(255,245,222,.9), 0 0 22px rgba(255,223,170,.42);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 50% 22%, rgba(255,230,174,.12), transparent 22rem),
+        radial-gradient(circle at 18% 82%, rgba(130,96,52,.12), transparent 22rem),
+        linear-gradient(180deg,#070708 0%,#020203 100%);
+      font-family: "Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",serif;
+      line-height:1.9;
+      letter-spacing:.08em;
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background-image:
+        radial-gradient(circle at 50% 25%, rgba(255,255,255,.08), transparent 1px),
+        linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.016) 1px, transparent 1px);
+      background-size: 2px 2px, 46px 46px, 46px 46px;
+      opacity:.48;
+      mix-blend-mode:screen;
+    }
+
+    body::after{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:radial-gradient(circle, transparent 40%, rgba(0,0,0,.62) 100%);
+      z-index:0;
+    }
+
+    button,input{
+      font:inherit;
+      letter-spacing:.08em;
+    }
+
+    .app{
+      width:min(100%, 680px);
+      min-height:100svh;
+      margin:0 auto;
+      padding:18px 18px 34px;
+      position:relative;
+      z-index:1;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:20;
+      padding:8px 0 10px;
+      background:linear-gradient(180deg, rgba(5,5,5,.96), rgba(5,5,5,.72) 70%, transparent);
+      backdrop-filter:blur(8px);
+    }
+
+    .toprow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      min-height:44px;
+    }
+
+    .progress-wrap{
+      flex:1;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      opacity:.95;
+    }
+
+    .progress-label{
+      font-size:.72rem;
+      color:var(--ink2);
+      text-shadow:var(--glow);
+      white-space:nowrap;
+    }
+
+    .progress-track{
+      height:2px;
+      flex:1;
+      position:relative;
+      background:rgba(255,238,202,.16);
+      box-shadow:0 0 12px rgba(255,225,174,.12);
+    }
+
+    .progress-fill{
+      height:100%;
+      width:0%;
+      background:var(--gold);
+      box-shadow:var(--glow);
+      transition:width .35s ease;
+    }
+
+    .bgm{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      color:var(--ink);
+      font-size:.8rem;
+      text-shadow:var(--glow);
+      background:transparent;
+      border:0;
+      padding:4px 0;
+      width:auto;
+      cursor:pointer;
+    }
+
+    .bgm .icon{
+      width:36px;
+      height:36px;
+      border:1px solid var(--line);
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      box-shadow:0 0 16px rgba(255,230,174,.12);
+      font-size:1.12rem;
+    }
+
+    .screen{
+      min-height:calc(100svh - 70px);
+      display:none;
+      animation:fade .35s ease both;
+    }
+
+    .screen.active{display:block}
+
+    .center{
+      min-height:calc(100svh - 70px);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+    }
+
+    @keyframes fade{
+      from{opacity:0; transform:translateY(8px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+
+    .title-box{
+      width:min(78vw, 360px);
+      aspect-ratio:1.23/1;
+      border:2px solid rgba(255,245,222,.92);
+      box-shadow:var(--glow), inset 0 0 22px rgba(255,238,202,.08);
+      display:grid;
+      place-items:center;
+      margin:0 auto 26px;
+      padding:16px 14px;
+    }
+
+    .title-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:4px 22px;
+      font-size:clamp(3rem, 14vw, 5.6rem);
+      line-height:.95;
+      font-weight:700;
+      text-shadow:var(--glow);
+    }
+
+    .copy{
+      margin:0 0 36px;
+      color:var(--ink);
+      font-size:clamp(.9rem, 3.6vw, 1.08rem);
+      text-shadow:0 0 10px rgba(255,245,222,.8), 0 0 20px rgba(255,226,174,.22);
+      letter-spacing:.055em;
+    }
+
+    .primary{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:190px;
+      border:1px solid rgba(255,245,222,.88);
+      color:var(--ink);
+      background:rgba(255,255,255,.02);
+      border-radius:18px;
+      padding:15px 28px;
+      text-decoration:none;
+      text-shadow:var(--glow);
+      box-shadow:var(--glow), inset 0 0 20px rgba(255,238,202,.04);
+      cursor:pointer;
+      transition:transform .18s ease, background .18s ease;
+    }
+
+    .primary:active{transform:scale(.985)}
+    .primary:hover{background:rgba(255,238,202,.06)}
+
+    .page{
+      padding:58px 8px 32px;
+    }
+
+    .label{
+      width:max-content;
+      margin:0 auto 20px;
+      border:1px solid rgba(255,245,222,.72);
+      padding:4px 24px;
+      color:var(--ink);
+      text-shadow:var(--glow);
+      box-shadow:0 0 16px rgba(255,230,174,.12);
+      font-size:1.05rem;
+      line-height:1.6;
+    }
+
+    h1,h2,h3,p{margin-top:0}
+
+    .heading{
+      text-align:center;
+      margin:0 0 34px;
+      font-size:clamp(2rem, 9vw, 3.3rem);
+      font-weight:500;
+      line-height:1.25;
+      color:var(--ink);
+      text-shadow:var(--glow);
+      letter-spacing:.14em;
+    }
+
+    .heading::after{
+      content:"";
+      display:block;
+      width:140px;
+      height:1px;
+      margin:18px auto 0;
+      background:linear-gradient(90deg, transparent, rgba(255,238,202,.78), transparent);
+      box-shadow:var(--glow);
+    }
+
+    .text{
+      font-size:clamp(.98rem, 4.1vw, 1.08rem);
+      color:var(--ink);
+      text-shadow:0 0 8px rgba(255,245,222,.5);
+      max-width:560px;
+      margin:0 auto 28px;
+    }
+
+    .text p{margin:0 0 1.02em}
+
+    .quote-box{
+      max-width:560px;
+      margin:26px auto;
+      border:1px solid rgba(255,245,222,.66);
+      padding:18px 14px;
+      text-align:center;
+      color:var(--ink);
+      text-shadow:var(--glow);
+      box-shadow:0 0 20px rgba(255,230,174,.13), inset 0 0 16px rgba(255,238,202,.03);
+      background:rgba(255,238,202,.025);
+      font-size:clamp(1.08rem, 4.9vw, 1.45rem);
+      letter-spacing:.13em;
+    }
+
+    .bracket{
+      max-width:560px;
+      margin:28px auto;
+      padding:18px 24px;
+      position:relative;
+      text-align:center;
+      color:var(--ink);
+      text-shadow:var(--glow);
+    }
+
+    .bracket::before,.bracket::after{
+      content:"";
+      position:absolute;
+      top:0;
+      bottom:0;
+      width:18px;
+      border-color:rgba(255,245,222,.8);
+      box-shadow:var(--glow);
+    }
+    .bracket::before{
+      left:0;
+      border-left:2px solid;
+      border-top:2px solid;
+      border-bottom:2px solid;
+    }
+    .bracket::after{
+      right:0;
+      border-right:2px solid;
+      border-top:2px solid;
+      border-bottom:2px solid;
+    }
+
+    .divider-title{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:14px;
+      color:var(--ink2);
+      text-shadow:var(--glow);
+      margin:28px auto 14px;
+      max-width:560px;
+    }
+
+    .divider-title::before,.divider-title::after{
+      content:"";
+      height:1px;
+      flex:1;
+      background:linear-gradient(90deg, transparent, rgba(255,238,202,.45));
+      box-shadow:0 0 8px rgba(255,230,174,.18);
+    }
+    .divider-title::after{
+      background:linear-gradient(90deg, rgba(255,238,202,.45), transparent);
+    }
+
+    .clue{
+      max-width:560px;
+      margin:0 auto 22px;
+      border:1px solid rgba(255,245,222,.72);
+      box-shadow:var(--glow), inset 0 0 16px rgba(255,238,202,.03);
+      background:rgba(255,255,255,.018);
+      text-align:center;
+      color:var(--ink);
+      text-shadow:var(--glow);
+      font-size:clamp(1.15rem, 5vw, 1.55rem);
+      line-height:2.15;
+      padding:12px 12px;
+    }
+
+    .clue .line + .line{
+      border-top:1px solid rgba(255,238,202,.23);
+    }
+
+    .instruction{
+      max-width:560px;
+      margin:0 auto 18px;
+      text-align:center;
+      color:var(--ink2);
+      text-shadow:0 0 8px rgba(255,238,202,.35);
+      font-size:.95rem;
+    }
+
+    .input{
+      width:100%;
+      max-width:560px;
+      display:block;
+      margin:0 auto 14px;
+      border:1px solid rgba(255,245,222,.62);
+      background:rgba(0,0,0,.2);
+      color:var(--ink);
+      border-radius:0;
+      padding:15px 16px;
+      outline:none;
+      box-shadow:0 0 14px rgba(255,230,174,.08), inset 0 0 18px rgba(255,238,202,.025);
+      font-size:1rem;
+      font-family:"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+      letter-spacing:.04em;
+    }
+
+    .input::placeholder{color:rgba(255,238,202,.42)}
+
+    .buttons{
+      max-width:560px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .btn{
+      border:1px solid rgba(255,245,222,.66);
+      color:var(--ink);
+      background:rgba(255,255,255,.018);
+      padding:12px 10px;
+      box-shadow:0 0 14px rgba(255,230,174,.1), inset 0 0 14px rgba(255,238,202,.025);
+      text-shadow:var(--glow);
+      cursor:pointer;
+    }
+
+    .btn.full{grid-column:1 / -1}
+
+    .msg{
+      max-width:560px;
+      margin:14px auto 0;
+      min-height:1.6em;
+      font-weight:600;
+      text-align:center;
+      font-family:"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+      letter-spacing:.04em;
+    }
+    .msg.ok{color:var(--ok); text-shadow:0 0 12px rgba(182,230,170,.3)}
+    .msg.ng{color:var(--ng); text-shadow:0 0 12px rgba(255,175,166,.25)}
+
+    .hint{
+      display:none;
+      max-width:560px;
+      margin:16px auto 0;
+      color:var(--ink2);
+      border:1px solid rgba(255,245,222,.24);
+      background:rgba(255,238,202,.035);
+      padding:14px 14px;
+      font-size:.88rem;
+      font-family:"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+      letter-spacing:.04em;
+    }
+
+    .collected{
+      max-width:430px;
+      margin:20px auto 28px;
+      border:1px solid rgba(255,245,222,.38);
+      box-shadow:0 0 16px rgba(255,230,174,.08);
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns:60px 1fr;
+      align-items:center;
+      min-height:48px;
+      border-bottom:1px solid rgba(255,245,222,.16);
+      color:var(--ink);
+      text-shadow:var(--glow);
+      font-size:1.15rem;
+    }
+    .row:last-child{border-bottom:0}
+    .num{
+      text-align:center;
+      border-right:1px solid rgba(255,245,222,.18);
+      color:var(--ink2);
+    }
+    .word{padding-left:24px}
+
+    .count{
+      text-align:center;
+      color:var(--ink2);
+      font-size:.95rem;
+      margin:30px auto 0;
+      text-shadow:0 0 10px rgba(255,238,202,.3);
+    }
+
+    .count::before,.count::after{
+      content:"";
+      display:inline-block;
+      width:52px;
+      height:1px;
+      vertical-align:middle;
+      margin:0 16px;
+      background:linear-gradient(90deg, transparent, rgba(255,238,202,.45));
+    }
+    .count::after{
+      background:linear-gradient(90deg, rgba(255,238,202,.45), transparent);
+    }
+
+    .stamp{
+      display:inline-block;
+      margin:10px 0 0;
+      border:2px solid rgba(182,230,170,.7);
+      color:var(--ok);
+      padding:4px 12px;
+      transform:rotate(-4deg);
+      text-shadow:0 0 10px rgba(182,230,170,.25);
+      box-shadow:0 0 14px rgba(182,230,170,.12);
+      font-family:"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+      font-weight:800;
+      letter-spacing:.12em;
+    }
+
+    .hidden{display:none !important}
+
+    @media (max-width:420px){
+      .app{padding-left:14px; padding-right:14px}
+      .page{padding-top:42px}
+      .buttons{gap:10px}
+      .btn{font-size:.94rem}
+      .quote-box{font-size:1.02rem}
+      .bracket{padding-left:18px; padding-right:18px}
+      .heading{letter-spacing:.08em}
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <div class="topbar hidden" id="topbar">
+      <div class="toprow">
+        <div class="progress-wrap">
+          <span class="progress-label" id="progressText">展示進行度</span>
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+        <button class="bgm" id="bgmBtn" type="button" aria-label="BGMのオンオフ">
+          <span class="icon">♪</span><span id="bgmText">BGM<br>OFF</span>
+        </button>
+      </div>
+    </div>
+
+    <section class="screen center active" id="titleScreen">
+      <div class="title-box">
+        <div class="title-grid" aria-label="未提出博覧会">
+          <span>未</span><span>提</span>
+          <span>出</span><span>博</span>
+          <span>覧</span><span>会</span>
+        </div>
+      </div>
+      <p class="copy">まだ何者にもなっていない人、入場無料。</p>
+      <button class="primary" id="startBtn" type="button">はじめる</button>
+    </section>
+
+    <section class="screen page" id="storyScreen">
+      <div class="label" id="storyLabel">入口</div>
+      <h2 class="heading" id="storyHeading">招待券</h2>
+      <div class="text" id="storyBody"></div>
+      <div id="storySpecial"></div>
+      <button class="primary" id="storyNext" type="button">次へ</button>
+      <div class="count" id="storyCount">1 / 3</div>
+    </section>
+
+    <section class="screen page" id="puzzleScreen">
+      <div class="label" id="puzzleLabel">第一展示室</div>
+      <h2 class="heading" id="puzzleHeading">はじまりの箱</h2>
+      <div class="text" id="puzzleStory"></div>
+      <div class="bracket" id="puzzleQuote"></div>
+      <div class="divider-title">手がかり</div>
+      <div class="clue" id="clueBox"></div>
+      <p class="instruction" id="instruction"></p>
+      <input class="input" id="answerInput" placeholder="こたえ" autocomplete="off" autocapitalize="off" />
+      <div class="buttons">
+        <button class="btn" id="submitBtn" type="button">送信する</button>
+        <button class="btn" id="hintBtn" type="button">ヒント</button>
+      </div>
+      <div class="hint" id="hintBox"></div>
+      <div class="msg" id="answerMsg"></div>
+    </section>
+
+    <section class="screen page" id="finalScreen">
+      <div class="label">出口</div>
+      <h2 class="heading">出口前の提出箱</h2>
+      <div class="text">
+        <p>六つの展示を見終えると、出口の前に古い提出箱が置かれていた。</p>
+        <p>箱には、今まで集めた六つの答えを書く欄がある。</p>
+      </div>
+      <div class="collected" id="collectedList"></div>
+      <div class="bracket">それぞれの答えの、<br>最初の文字を順番に読んでください。</div>
+      <input class="input" id="finalInput" placeholder="さいごのこたえ" autocomplete="off" autocapitalize="off" />
+      <div class="buttons">
+        <button class="btn full" id="finalSubmit" type="button">提出する</button>
+        <button class="btn full" id="finalHintBtn" type="button">ヒント</button>
+      </div>
+      <div class="hint" id="finalHint">答えの最初の文字を並べると、ある行動が浮かび上がるかもしれません。</div>
+      <div class="msg" id="finalMsg"></div>
+    </section>
+
+    <section class="screen page" id="endingScreen">
+      <div class="label">閲覧終了</div>
+      <h2 class="heading" id="endingHeading">はじめるだけ</h2>
+      <div class="text" id="endingBody"></div>
+      <button class="primary" id="endingNext" type="button">次へ</button>
+      <div class="buttons hidden" id="endingActions">
+        <button class="btn" id="replayBtn" type="button">もう一度</button>
+        <button class="btn" id="titleBtn" type="button">タイトル</button>
+      </div>
+      <div class="count" id="endingCount">1 / 4</div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    const intro = [
+      {
+        label:"入口",
+        heading:"招待券",
+        body:`<p>夜、机の引き出しの奥から、見覚えのないチケットが出てきた。</p><p>少し黄ばんだ紙に、黒いインクでこう印刷されている。</p>`,
+        special:`<div class="quote-box">『未提出博覧会　招待券』</div>`
+      },
+      {
+        label:"入口",
+        heading:"展示対象",
+        body:`<p>裏には、小さな文字があった。</p>`,
+        special:`<div class="bracket">やらなかったことは、<br>失敗ではありません。<br>ただし、展示対象です。</div><div class="text"><p>かなり嫌な招待券だった。</p></div>`
+      },
+      {
+        label:"入口",
+        heading:"入場",
+        body:`<p>捨てようとした指が、少しだけ止まった。</p><p>たぶん、自分でも分かっていた。見ないふりをしているものほど、ちゃんと名前がついている。</p><p>チケットを握ると、部屋の壁に小さな入口が現れた。</p>`,
+        special:``
+      }
+    ];
+
+    const rooms = [
+      {
+        label:"第一展示室",
+        heading:"はじまりの箱",
+        answer:"はこ",
+        story:`<p>最初の展示室には、箱がひとつだけ置かれていた。</p><p>中には、未使用のノート、削られていない鉛筆、開封されなかった絵の具が入っている。</p>`,
+        quote:`始める前なら、まだ下手じゃない。<br>始める前なら、まだ負けていない。<br>だからこの箱は、ずっと閉じられていました。`,
+        clue:["はじまりのノート","こわくて閉じた箱"],
+        instruction:"この箱の名前は、ラベルの最初にあります。",
+        hint:"二つのラベルの最初の文字を順番に読んでみてください。",
+        ok:"箱のふたが、少しだけ開いた。"
+      },
+      {
+        label:"第二展示室",
+        heading:"じてんしゃ練習場",
+        answer:"じてんしゃ",
+        story:`<p>次の部屋は、夜の校庭みたいだった。床には白いラインが引かれていて、真ん中に補助輪つきの自転車が一台置かれている。</p>`,
+        quote:`転ぶのが怖かったのではありません。<br>転ぶところを見られるのが怖かったのです。`,
+        clue:["じぶんだけ遅い","てを離せない","んー、今日はやめる","しゃりんだけ回る"],
+        instruction:"練習日記の最初の文字を拾ってください。",
+        hint:"各行の先頭だけを順番に読むと、乗り物の名前になります。",
+        ok:"自転車のベルが、小さく鳴った。"
+      },
+      {
+        label:"第三展示室",
+        heading:"めがね客席",
+        answer:"めがね",
+        story:`<p>三つ目の展示室には、客席があった。小さな劇場のように、黒い椅子が何列も並んでいる。</p><p>けれど、人は座っていない。代わりに、椅子の上にはたくさんの眼鏡だけが置かれていた。</p>`,
+        quote:`客席からなら、何にでもなれました。<br>でも、舞台に立たない限り、<br>自分の名前は呼ばれませんでした。`,
+        clue:["めをそらした客席","がんばる人の背中","ねたましい拍手"],
+        instruction:"眼鏡たちが見ていたものの、最初の文字を読んでください。",
+        hint:"三つの文の頭の文字です。客席に置かれていたものになります。",
+        ok:"舞台袖から、拍手の音が一回だけした。"
+      },
+      {
+        label:"第四展示室",
+        heading:"るすばん部屋",
+        answer:"るすばん",
+        story:`<p>四つ目の部屋は、夕方の家みたいだった。カーテンは半分だけ閉まっていて、テレビはついているのに音がない。</p><p>壁には古い電話機がかかっていた。留守番電話の赤いランプが点滅している。</p>`,
+        quote:`夢中な人を笑うのは簡単でした。<br>その人たちが、自分よりずっと勇敢だと<br>気づかないふりをして。`,
+        clue:["るすにしています。まだ本気ではないので。","すきだったものは、もう子どもっぽいので。","ばんごうを消しました。かけ直さなくていいので。"],
+        instruction:"留守番電話の最初の音を拾ってください。",
+        hint:"三件の留守番電話。最初の音を続けて読むと、部屋の名前になります。",
+        ok:"電話機の赤いランプが、ふっと消えた。"
+      },
+      {
+        label:"第五展示室",
+        heading:"だるま応募箱",
+        answer:"だるま",
+        story:`<p>五つ目の部屋には、赤いだるまと応募箱が並んでいた。壁一面に、出されなかった紙が貼られている。</p><p>コンテストの応募用紙。履歴書。企画書。送信ボタンを押す前に閉じた下書き。</p>`,
+        quote:`目標はありました。<br>でも、目を入れるほどではありませんでした。<br>本気だったことにすると、落ちた時に困るからです。`,
+        clue:["ださなかった応募用紙","るールだけ調べた夜","まにあわないふりをした朝"],
+        instruction:"応募箱に残った紙の、最初の文字を読んでください。",
+        hint:"赤くて、願い事の時によく見るものです。",
+        ok:"だるまの白い目に、ほんの少しだけ黒がにじんだ。"
+      },
+      {
+        label:"第六展示室",
+        heading:"けむり出口前",
+        answer:"けむり",
+        story:`<p>最後の展示室は、少し煙たかった。火はどこにもないのに、白い煙だけがゆっくり漂っている。</p><p>焦げた匂いではない。燃える前に湿ってしまった紙みたいな匂いだった。</p>`,
+        quote:`夢は燃えませんでした。<br>燃やすところまで、持っていけなかったからです。<br>残ったのは、言い訳に似た白い煙だけでした。`,
+        clue:["けっきょく怖かった","むりだと先に言った","りゆうだけ増えた"],
+        instruction:"煙の中に残った言葉の、最初の文字を読んでください。",
+        hint:"火が消えたあとに残る、白くて薄いものです。",
+        ok:"煙が少し晴れて、出口の明かりが見えた。"
+      }
+    ];
+
+    const endings = [
+      {
+        heading:"はじめるだけ",
+        body:`<p>あなたが合言葉を入力すると、提出箱のふたが静かに開いた。</p><p>中には、未使用のノートが一冊だけ入っている。表紙には何も書かれていない。</p>`
+      },
+      {
+        heading:"最初の一行",
+        body:`<p>ページの一番上に、薄い罫線が一本あった。</p><p>だるまは、ころんと少し揺れた。</p><p class="quote">何者かになる必要はありません。<br>提出物は、最初の一行だけです。</p>`
+      },
+      {
+        heading:"未提出ではなくなった",
+        body:`<p>あなたは、ノートの最初のページに小さく書いた。</p><div class="quote-box">はじめるだけ</div><p>書いた瞬間、何も起こらなかった。ファンファーレも鳴らない。人生が急に始まるような音もしない。</p><p>ただ、提出箱が小さく音を立てて閉まった。</p>`
+      },
+      {
+        heading:"CLEAR",
+        body:`<p>たった一行。誰にも褒められないような、ただの一行。</p><p>それでも、何も出していなかった場所に、初めて何かを置いた。</p><p>それでも、未提出ではなくなった。</p><p>あなたはノートを閉じずに、そのまま机の上に置いた。</p><p>失敗できる場所まで、やっと来た気がした。</p><span class="stamp">CLEAR</span>`
+      }
+    ];
+
+    let stage = "title";
+    let introIndex = 0;
+    let roomIndex = 0;
+    let endingIndex = 0;
+    let bgmOn = false;
+    let audioCtx = null;
+    let bgmNodes = [];
+
+    function normalize(text){
+      return (text || "")
+        .replace(/\s/g,"")
+        .replace(/[ァ-ン]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0x60))
+        .toLowerCase();
+    }
+
+    function show(id){
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      $(id).classList.add("active");
+      $("topbar").classList.toggle("hidden", id === "titleScreen");
+      window.scrollTo({top:0, behavior:"smooth"});
+      updateProgress();
+    }
+
+    function updateProgress(){
+      let total = rooms.length + 2;
+      let value = 0;
+      if(stage === "intro") value = .5;
+      if(stage === "room") value = roomIndex + 1;
+      if(stage === "final") value = rooms.length + 1;
+      if(stage === "ending") value = total;
+      $("progressFill").style.width = Math.min(100, (value / total) * 100) + "%";
+      $("progressText").textContent = stage === "room" ? `${roomIndex + 1} / ${rooms.length}` : "展示進行度";
+    }
+
+    function renderIntro(){
+      stage = "intro";
+      const page = intro[introIndex];
+      $("storyLabel").textContent = page.label;
+      $("storyHeading").textContent = page.heading;
+      $("storyBody").innerHTML = page.body;
+      $("storySpecial").innerHTML = page.special || "";
+      $("storyCount").textContent = `${introIndex + 1} / ${intro.length}`;
+      $("storyNext").textContent = introIndex + 1 === intro.length ? "入場する" : "次へ";
+      show("storyScreen");
+    }
+
+    function renderRoom(){
+      stage = "room";
+      const r = rooms[roomIndex];
+      $("puzzleLabel").textContent = r.label;
+      $("puzzleHeading").textContent = r.heading;
+      $("puzzleStory").innerHTML = r.story;
+      $("puzzleQuote").innerHTML = r.quote;
+      $("clueBox").innerHTML = r.clue.map(line => `<div class="line">${line}</div>`).join("");
+      $("instruction").textContent = r.instruction;
+      $("hintBox").textContent = r.hint;
+      $("hintBox").style.display = "none";
+      $("answerInput").value = "";
+      $("answerMsg").textContent = "";
+      $("answerMsg").className = "msg";
+      show("puzzleScreen");
+    }
+
+    function renderFinal(){
+      stage = "final";
+      $("collectedList").innerHTML = rooms.map((r,i) => `<div class="row"><div class="num">${i+1}</div><div class="word">${r.answer}</div></div>`).join("");
+      $("finalInput").value = "";
+      $("finalMsg").textContent = "";
+      $("finalMsg").className = "msg";
+      $("finalHint").style.display = "none";
+      show("finalScreen");
+    }
+
+    function renderEnding(){
+      stage = "ending";
+      const e = endings[endingIndex];
+      $("endingHeading").textContent = e.heading;
+      $("endingBody").innerHTML = e.body;
+      $("endingCount").textContent = `${endingIndex + 1} / ${endings.length}`;
+      $("endingNext").classList.toggle("hidden", endingIndex + 1 === endings.length);
+      $("endingActions").classList.toggle("hidden", endingIndex + 1 !== endings.length);
+      show("endingScreen");
+    }
+
+    function setupAudio(){
+      if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if(audioCtx.state === "suspended") audioCtx.resume();
+    }
+
+    function tone(freq, dur=.12, vol=.035, type="sine", delay=0){
+      try{
+        setupAudio();
+        const now = audioCtx.currentTime + delay;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(vol, now + .015);
+        gain.gain.exponentialRampToValueAtTime(.0001, now + dur);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + dur + .03);
+      }catch(e){}
+    }
+
+    function clickSound(){ tone(520,.06,.022,"triangle"); }
+    function okSound(){ tone(523,.1,.035); tone(659,.13,.028,"sine",.08); tone(784,.18,.024,"sine",.17); }
+    function ngSound(){ tone(170,.18,.026,"triangle"); tone(138,.16,.018,"triangle",.12); }
+    function pageSound(){ tone(392,.08,.018); tone(440,.08,.014,"sine",.06); }
+
+    function startBgm(){
+      try{
+        setupAudio();
+        stopBgm();
+        const master = audioCtx.createGain();
+        master.gain.setValueAtTime(.016, audioCtx.currentTime);
+        master.connect(audioCtx.destination);
+        [110,146.83,220].forEach((freq,i)=>{
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = i === 0 ? "sine" : "triangle";
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          gain.gain.setValueAtTime(i === 0 ? .65 : .2, audioCtx.currentTime);
+          osc.connect(gain);
+          gain.connect(master);
+          osc.start();
+          bgmNodes.push(osc,gain);
+        });
+        bgmNodes.push(master);
+      }catch(e){}
+    }
+
+    function stopBgm(){
+      bgmNodes.forEach(n=>{
+        try{ if(n.stop) n.stop(); if(n.disconnect) n.disconnect(); }catch(e){}
+      });
+      bgmNodes = [];
+    }
+
+    function updateBgmText(){
+      $("bgmText").innerHTML = bgmOn ? "BGM<br>ON" : "BGM<br>OFF";
+    }
+
+    $("startBtn").addEventListener("click", () => {
+      clickSound();
+      introIndex = 0;
+      roomIndex = 0;
+      endingIndex = 0;
+      renderIntro();
+    });
+
+    $("storyNext").addEventListener("click", () => {
+      pageSound();
+      if(introIndex + 1 < intro.length){
+        introIndex++;
+        renderIntro();
+      }else{
+        roomIndex = 0;
+        renderRoom();
+      }
+    });
+
+    $("submitBtn").addEventListener("click", () => {
+      const r = rooms[roomIndex];
+      if(normalize($("answerInput").value) === r.answer){
+        okSound();
+        $("answerMsg").textContent = r.ok;
+        $("answerMsg").className = "msg ok";
+        setTimeout(() => {
+          if(roomIndex + 1 < rooms.length){
+            roomIndex++;
+            renderRoom();
+          }else{
+            renderFinal();
+          }
+        }, 900);
+      }else{
+        ngSound();
+        $("answerMsg").textContent = "まだ違うみたい。手がかりをもう一度見てみてください。";
+        $("answerMsg").className = "msg ng";
+      }
+    });
+
+    $("hintBtn").addEventListener("click", () => {
+      clickSound();
+      $("hintBox").style.display = $("hintBox").style.display === "block" ? "none" : "block";
+    });
+
+    $("finalHintBtn").addEventListener("click", () => {
+      clickSound();
+      $("finalHint").style.display = $("finalHint").style.display === "block" ? "none" : "block";
+    });
+
+    $("finalSubmit").addEventListener("click", () => {
+      if(normalize($("finalInput").value) === "はじめるだけ"){
+        okSound();
+        $("finalMsg").textContent = "提出、受理しました。";
+        $("finalMsg").className = "msg ok";
+        setTimeout(() => {
+          endingIndex = 0;
+          renderEnding();
+        }, 900);
+      }else{
+        ngSound();
+        $("finalMsg").textContent = "まだ出口は開かないみたい。六つの答えの最初を見てください。";
+        $("finalMsg").className = "msg ng";
+      }
+    });
+
+    $("endingNext").addEventListener("click", () => {
+      pageSound();
+      if(endingIndex + 1 < endings.length){
+        endingIndex++;
+        renderEnding();
+      }
+    });
+
+    $("replayBtn").addEventListener("click", () => {
+      clickSound();
+      introIndex = 0;
+      roomIndex = 0;
+      endingIndex = 0;
+      renderIntro();
+    });
+
+    $("titleBtn").addEventListener("click", () => {
+      clickSound();
+      stage = "title";
+      show("titleScreen");
+    });
+
+    $("bgmBtn").addEventListener("click", () => {
+      bgmOn = !bgmOn;
+      updateBgmText();
+      if(bgmOn){ startBgm(); clickSound(); }
+      else{ stopBgm(); }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Enter"){
+        if(stage === "room") $("submitBtn").click();
+        if(stage === "final") $("finalSubmit").click();
+      }
+    });
+
+    updateBgmText();
+  </script>
+</body>
+</html>
