@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>未提出博覧会</title>
+  <style>
+    :root {
+      --bg: #f4f0e7;
+      --paper: #fffaf0;
+      --ink: #2d2924;
+      --sub: #756f66;
+      --line: #d8cfbf;
+      --accent: #7b5d3a;
+      --accent-soft: #eadcc8;
+      --danger: #8a4b44;
+      --ok: #4f7652;
+      --shadow: 0 18px 45px rgba(45, 41, 36, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.9), transparent 32rem),
+        linear-gradient(135deg, #f7f1e7 0%, #ebe0cf 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+      line-height: 1.9;
+      letter-spacing: 0.02em;
+    }
+
+    .app {
+      width: min(100%, 760px);
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 18px 16px 34px;
+    }
+
+    .card {
+      background: rgba(255, 250, 240, 0.94);
+      border: 1px solid rgba(216, 207, 191, 0.9);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 24px 20px;
+      margin: 18px 0;
+      backdrop-filter: blur(8px);
+    }
+
+    .title-card, .story-card {
+      min-height: calc(100vh - 78px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .eyebrow {
+      font-size: 0.8rem;
+      color: var(--sub);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: clamp(2.1rem, 12vw, 4.2rem);
+      line-height: 1.08;
+      margin: 0 0 18px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      margin: 0 0 14px;
+      line-height: 1.45;
+    }
+
+    h3 {
+      margin: 22px 0 10px;
+      font-size: 1rem;
+      color: var(--accent);
+    }
+
+    p { margin: 0 0 1em; }
+
+    .lead { font-size: 1.02rem; color: var(--sub); }
+    .small { font-size: 0.88rem; color: var(--sub); }
+
+    .notice {
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      padding: 14px 14px;
+      background: rgba(234, 220, 200, 0.35);
+      margin: 18px 0;
+    }
+
+    .quote {
+      border-left: 4px solid var(--accent-soft);
+      padding-left: 14px;
+      color: #4b443c;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fffaf0;
+      background: var(--accent);
+      box-shadow: 0 10px 20px rgba(123,93,58,0.22);
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    button.secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent-soft);
+      box-shadow: none;
+    }
+
+    button.ghost {
+      background: rgba(123,93,58,0.08);
+      color: var(--accent);
+      border: 1px solid rgba(123,93,58,0.16);
+      box-shadow: none;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.68);
+      border-radius: 16px;
+      padding: 14px 15px;
+      font-size: 1.05rem;
+      color: var(--ink);
+      outline: none;
+      margin: 10px 0 4px;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(123,93,58,0.12);
+    }
+
+    .answer-area {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(216,207,191,0.75);
+    }
+
+    .message {
+      min-height: 1.6em;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    .message.ok { color: var(--ok); }
+    .message.ng { color: var(--danger); }
+
+    .hint {
+      display: none;
+      margin-top: 12px;
+      color: var(--sub);
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(216,207,191,0.75);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+
+    .progress {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      padding: 8px 0 4px;
+      background: linear-gradient(180deg, rgba(244,240,231,0.98), rgba(244,240,231,0));
+      backdrop-filter: blur(5px);
+    }
+
+    .sound-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 6px;
+    }
+
+    .sound-toggle {
+      width: auto;
+      margin: 0;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      color: var(--accent);
+      background: rgba(255,250,240,0.82);
+      border: 1px solid rgba(123,93,58,0.2);
+      box-shadow: none;
+    }
+
+    .progress-inner {
+      height: 8px;
+      background: rgba(216,207,191,0.7);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+
+    .room-label {
+      display: inline-block;
+      color: var(--accent);
+      font-weight: 800;
+      border: 1px solid var(--accent-soft);
+      background: rgba(234,220,200,0.32);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.82rem;
+      margin-bottom: 14px;
+    }
+
+    .puzzle-box {
+      border-radius: 18px;
+      border: 1px solid rgba(216,207,191,0.9);
+      background: rgba(255,255,255,0.48);
+      padding: 16px 15px;
+      margin: 16px 0;
+    }
+
+    .words {
+      font-weight: 700;
+      line-height: 2;
+      letter-spacing: 0.05em;
+    }
+
+    .hidden { display: none !important; }
+
+    .stamp {
+      display: inline-block;
+      transform: rotate(-5deg);
+      border: 3px solid var(--ok);
+      color: var(--ok);
+      border-radius: 10px;
+      padding: 5px 12px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      margin: 12px 0 0;
+    }
+
+    .footer-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .page-count {
+      color: var(--sub);
+      font-size: 0.85rem;
+      margin-top: 14px;
+      text-align: right;
+    }
+
+    @media (min-width: 640px) {
+      .card { padding: 34px 34px; }
+      .footer-actions { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div id="progress" class="progress hidden">
+      <div class="sound-row">
+        <button id="sound-toggle" class="sound-toggle" onclick="toggleSound()">音 ON</button>
+      </div>
+      <div class="progress-inner"><div id="bar" class="bar"></div></div>
+    </div>
+
+    <section id="screen-title" class="card title-card">
+      <div class="eyebrow">web mystery game 01</div>
+      <h1>未提出<br>博覧会</h1>
+      <p class="lead">まだ何者にもなっていない方、入場無料。</p>
+      <div class="notice">
+        <p>六つの展示を見て、出口の合言葉を見つけてください。</p>
+        <p class="small">スマホで遊べる、短い物語つき謎解きです。</p>
+      </div>
+      <button onclick="startGame()">はじめる</button>
+      <button class="secondary" onclick="resetGame()">はじめからにする</button>
+    </section>
+
+    <section id="screen-story" class="card story-card hidden">
+      <div id="story-label" class="room-label"></div>
+      <h2 id="story-title"></h2>
+      <div id="story-body"></div>
+      <div id="story-count" class="page-count"></div>
+      <button id="story-next" onclick="nextStory()">次へ</button>
+    </section>
+
+    <section id="screen-room" class="card hidden">
+      <div id="room-label" class="room-label"></div>
+      <h2 id="room-title"></h2>
+      <div class="puzzle-box">
+        <h3>展示記録</h3>
+        <div id="room-words" class="words"></div>
+        <p class="small" id="room-rule"></p>
+      </div>
+      <div class="answer-area">
+        <label for="answer">答えをひらがなで入力してください</label>
+        <input id="answer" type="text" autocomplete="off" autocapitalize="off" placeholder="こたえ" />
+        <button onclick="checkAnswer()">送信する</button>
+        <button class="ghost" onclick="toggleHint()">ヒントを見る</button>
+        <div id="hint" class="hint"></div>
+        <div id="message" class="message"></div>
+      </div>
+    </section>
+
+    <section id="screen-final" class="card hidden">
+      <div class="room-label">出口</div>
+      <h2>出口前の提出箱</h2>
+      <p>六つの展示を見終えると、出口の前に古い提出箱が置かれていた。</p>
+      <p>箱には、今まで集めた六つの答えを書く欄がある。</p>
+      <div class="notice" id="collected"></div>
+      <p>受付係のだるまが言う。</p>
+      <p class="quote">それぞれの答えの、最初の文字を順番に読んでください。</p>
+      <div class="answer-area">
+        <label for="final-answer">最後の合言葉を入力してください</label>
+        <input id="final-answer" type="text" autocomplete="off" autocapitalize="off" placeholder="さいごのこたえ" />
+        <button onclick="checkFinal()">出口に提出する</button>
+        <button class="ghost" onclick="toggleFinalHint()">ヒントを見る</button>
+        <div id="final-hint" class="hint">集めた答えは「はこ」「じてんしゃ」「めがね」「るすばん」「だるま」「けむり」です。最初の文字だけ読むと……？</div>
+        <div id="final-message" class="message"></div>
+      </div>
+    </section>
+
+    <section id="screen-ending" class="card story-card hidden">
+      <div class="room-label">閲覧終了</div>
+      <h2 id="ending-title"></h2>
+      <div id="ending-body"></div>
+      <div id="ending-count" class="page-count"></div>
+      <button id="ending-next" onclick="nextEnding()">次へ</button>
+      <div id="ending-actions" class="footer-actions hidden">
+        <button onclick="resetGame()">もう一度遊ぶ</button>
+        <button class="secondary" onclick="goTitleOnly()">タイトルへ戻る</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let audioCtx = null;
+    let soundEnabled = true;
+    let ambientOsc = null;
+    let ambientGain = null;
+
+    function initAudio() {
+      if (!soundEnabled) return;
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    }
+
+    function playTone(freq = 440, duration = 0.12, type = "sine", volume = 0.035, delay = 0) {
+      if (!soundEnabled || !audioCtx) return;
+      const now = audioCtx.currentTime + delay;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, now);
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(volume, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + duration + 0.02);
+    }
+
+    function soundClick() { playTone(520, 0.07, "triangle", 0.025); }
+    function soundPage() { playTone(392, 0.08, "sine", 0.018); playTone(440, 0.08, "sine", 0.015, 0.06); }
+    function soundCorrect() { playTone(523.25, 0.10, "sine", 0.035); playTone(659.25, 0.12, "sine", 0.03, 0.08); playTone(783.99, 0.18, "sine", 0.026, 0.16); }
+    function soundWrong() { playTone(180, 0.18, "triangle", 0.025); playTone(150, 0.16, "triangle", 0.018, 0.12); }
+    function soundEnding() { playTone(392, 0.45, "sine", 0.025); playTone(493.88, 0.45, "sine", 0.022, 0.04); playTone(587.33, 0.55, "sine", 0.02, 0.08); playTone(783.99, 0.65, "sine", 0.014, 0.18); }
+
+    function startAmbient() {
+      if (!soundEnabled || !audioCtx || ambientOsc) return;
+      ambientOsc = audioCtx.createOscillator();
+      ambientGain = audioCtx.createGain();
+      ambientOsc.type = "sine";
+      ambientOsc.frequency.setValueAtTime(146.83, audioCtx.currentTime);
+      ambientGain.gain.setValueAtTime(0.006, audioCtx.currentTime);
+      ambientOsc.connect(ambientGain);
+      ambientGain.connect(audioCtx.destination);
+      ambientOsc.start();
+    }
+
+    function stopAmbient() {
+      if (ambientOsc) {
+        try { ambientOsc.stop(); } catch(e) {}
+        ambientOsc = null;
+        ambientGain = null;
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById("sound-toggle");
+      btn.textContent = soundEnabled ? "音 ON" : "音 OFF";
+      if (soundEnabled) {
+        initAudio();
+        startAmbient();
+        soundClick();
+      } else {
+        stopAmbient();
+      }
+    }
+
+    const introPages = [
+      {
+        label: "入口",
+        title: "招待券",
+        body: `
+          <p>夜、机の引き出しの奥から、見覚えのないチケットが出てきた。</p>
+          <p>少し黄ばんだ紙に、黒いインクでこう印刷されている。</p>
+          <p class="quote">未提出博覧会　招待券</p>
+        `
+      },
+      {
+        label: "入口",
+        title: "展示対象",
+        body: `
+          <p>裏には、小さな文字があった。</p>
+          <p class="quote">やらなかったことは、失敗ではありません。<br>ただし、展示対象です。</p>
+          <p>かなり嫌な招待券だった。</p>
+        `
+      },
+      {
+        label: "入口",
+        title: "入場",
+        body: `
+          <p>捨てようとした指が、少しだけ止まった。</p>
+          <p>たぶん、自分でも分かっていた。</p>
+          <p>見ないふりをしているものほど、ちゃんと名前がついている。</p>
+          <p>チケットを握ると、部屋の壁に小さな入口が現れた。</p>
+        `
+      }
+    ];
+
+    const rooms = [
+      {
+        label: "第一展示室",
+        title: "はじまりの箱",
+        answer: "はこ",
+        storyPages: [
+          `<p>最初の展示室には、箱がひとつだけ置かれていた。</p><p>中には、買ったまま使わなかったノート、削られていない鉛筆、開封されなかった絵の具が入っている。</p>`,
+          `<p>説明板にはこう書かれていた。</p><p class="quote">始める前なら、まだ下手じゃない。<br>始める前なら、まだ負けていない。</p><p>その言葉は、少しだけ優しくて、かなりずるかった。</p>`
+        ],
+        words: "はじまりのノート<br>こわくて閉じた箱",
+        rule: "二つの言葉の最初の文字を読んでください。",
+        hint: "「はじまり」「こわくて」の最初の文字です。"
+      },
+      {
+        label: "第二展示室",
+        title: "じてんしゃ練習場",
+        answer: "じてんしゃ",
+        storyPages: [
+          `<p>次の部屋には、補助輪つきの自転車が置かれていた。</p><p>床には、転んだ跡みたいな白い線がいくつも残っている。</p>`,
+          `<p>練習しなかった理由は、たぶん忙しかったからではない。</p><p>転ぶところを見られるのが、嫌だったからだ。</p>`
+        ],
+        words: "じぶんだけ遅い<br>てを離せない<br>んー、今日はやめる<br>しゃりんだけ回る",
+        rule: "四つの言葉の最初の文字を読んでください。",
+        hint: "各行の先頭だけを順番に読むと、乗り物の名前になります。"
+      },
+      {
+        label: "第三展示室",
+        title: "めがね客席",
+        answer: "めがね",
+        storyPages: [
+          `<p>三つ目の部屋には、客席があった。</p><p>舞台の上には誰もいない。けれど客席には、たくさんの眼鏡だけが座っている。</p>`,
+          `<p>頑張っている人を見るのは簡単だった。</p><p>少し笑ったり、少し評価したり、少しだけ「自分なら」と思ったりするのも簡単だった。</p><p>舞台に立たない限り、失敗はしない。</p>`
+        ],
+        words: "めをそらす客席<br>がんばる人の背中<br>ねたましさの拍手",
+        rule: "三つの言葉の最初の文字を読んでください。",
+        hint: "舞台に立たずに見ていたもの。先頭の文字だけ拾います。"
+      },
+      {
+        label: "第四展示室",
+        title: "るすばん部屋",
+        answer: "るすばん",
+        storyPages: [
+          `<p>四つ目の部屋は、夕方の家みたいだった。</p><p>テレビはついているのに音はなく、テーブルの上には冷めたココアがある。</p>`,
+          `<p>子どもじみていると笑ったもの。</p><p>夢中になる人を、少しだけ馬鹿にしたこと。</p><p>けれど本当は、その人たちの方がずっと素直で、ずっと勇敢だったのかもしれない。</p>`
+        ],
+        words: "るールを知ったふり<br>すきなものを隠す<br>ばんぐみだけ流れる",
+        rule: "三つの言葉の最初の文字を読んでください。",
+        hint: "この部屋の名前になります。「る」「す」「ばん」。"
+      },
+      {
+        label: "第五展示室",
+        title: "だるま応募箱",
+        answer: "だるま",
+        storyPages: [
+          `<p>五つ目の部屋には、赤いだるまと応募箱が並んでいた。</p><p>出さなかった応募用紙。途中まで書いた申込書。保存だけして閉じたファイル。</p>`,
+          `<p>だるまは目を入れられないまま、こちらを見ていた。</p><p>「やる気がなかったわけじゃない」</p><p>その言い訳だけが、妙に保存状態よく残っている。</p>`
+        ],
+        words: "ださなかった紙<br>るールを調べただけ<br>まにあわないふり",
+        rule: "三つの言葉の最初の文字を読んでください。",
+        hint: "赤くて、願い事の時によく見るもの。"
+      },
+      {
+        label: "第六展示室",
+        title: "けむり出口前",
+        answer: "けむり",
+        storyPages: [
+          `<p>最後の展示室は、少しだけ煙たかった。</p><p>部屋の奥で、小さな煙がゆっくり上がっている。燃えきらなかったものの匂いがした。</p>`,
+          `<p>動き出した誰かを、ずるいと思った。</p><p>才能がある人だから、チャンスがあった人だから、と思った。</p><p>でも本当は、みんな最初から平気だったわけではないのかもしれない。</p>`
+        ],
+        words: "けっきょく怖い<br>むりだと笑う<br>りゆうだけ増える",
+        rule: "三つの言葉の最初の文字を読んでください。",
+        hint: "火が消えたあとに残る、白くて薄いもの。"
+      }
+    ];
+
+    const endingPages = [
+      {
+        title: "はじめるだけ",
+        body: `<p>あなたが合言葉を入力すると、提出箱のふたが静かに開いた。</p><p>中には、未使用のノートが一冊だけ入っている。</p><p>表紙には何も書かれていない。立派な題名も、計画表も、きれいな目標もない。</p>`
+      },
+      {
+        title: "閉館のアナウンス",
+        body: `<p>受付係のだるまが、少しだけ転がりながら言った。</p><p class="quote">未提出のままなら、失敗しません。<br>ただし、完成もしません。</p><p>それは責める言葉ではなかった。どちらかというと、閉館のアナウンスに近かった。</p>`
+      },
+      {
+        title: "最初の一行",
+        body: `<p>何者かになる必要まではないのかもしれない。</p><p>才能も覚悟も、最初から揃っていなくていいのかもしれない。</p><p>ただ、最初の一行だけは、自分で書くしかない。</p>`
+      },
+      {
+        title: "CLEAR",
+        body: `<p>外に出ると、夜はまだ続いていた。でも、さっきより少しだけ道が見える気がした。</p><p>あなたはノートを開いて、最初のページに小さく書いた。</p><p class="quote">はじめるだけ</p><div class="stamp">CLEAR</div>`
+      }
+    ];
+
+    let current = 0;
+    let solved = [];
+    let storyPages = [];
+    let storyIndex = 0;
+    let storyDone = null;
+    let endingIndex = 0;
+
+    function norm(s) {
+      return (s || "").replace(/\s/g, "").replace(/[ァ-ン]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0x60)).toLowerCase();
+    }
+
+    function hideAll() {
+      document.querySelectorAll("main > section").forEach(el => el.classList.add("hidden"));
+    }
+
+    function updateProgress() {
+      const total = rooms.length + 3;
+      let step = solved.length;
+      if (!document.getElementById("screen-title").classList.contains("hidden")) step = 0;
+      if (!document.getElementById("screen-story").classList.contains("hidden")) step = Math.max(0.4, solved.length + 0.3);
+      if (!document.getElementById("screen-room").classList.contains("hidden")) step = solved.length + 0.6;
+      if (!document.getElementById("screen-final").classList.contains("hidden")) step = rooms.length + 1;
+      if (!document.getElementById("screen-ending").classList.contains("hidden")) step = total;
+      document.getElementById("bar").style.width = Math.min(100, Math.round(step / total * 100)) + "%";
+    }
+
+    function startGame() {
+      initAudio();
+      soundClick();
+      startAmbient();
+      solved = [];
+      current = 0;
+      showStory(introPages, () => showRoomStory(0));
+    }
+
+    function goTitleOnly() {
+      soundClick();
+      stopAmbient();
+      hideAll();
+      document.getElementById("progress").classList.add("hidden");
+      document.getElementById("screen-title").classList.remove("hidden");
+      window.scrollTo(0,0);
+    }
+
+    function resetGame() {
+      soundClick();
+      stopAmbient();
+      solved = [];
+      current = 0;
+      document.getElementById("answer").value = "";
+      document.getElementById("final-answer").value = "";
+      document.getElementById("message").textContent = "";
+      document.getElementById("final-message").textContent = "";
+      goTitleOnly();
+    }
+
+    function showStory(pages, onDone) {
+      storyPages = pages;
+      storyIndex = 0;
+      storyDone = onDone;
+      renderStory();
+    }
+
+    function renderStory() {
+      const page = storyPages[storyIndex];
+      hideAll();
+      document.getElementById("progress").classList.remove("hidden");
+      document.getElementById("screen-story").classList.remove("hidden");
+      document.getElementById("story-label").textContent = page.label || "物語";
+      document.getElementById("story-title").textContent = page.title || "";
+      document.getElementById("story-body").innerHTML = page.body;
+      document.getElementById("story-count").textContent = `${storyIndex + 1} / ${storyPages.length}`;
+      document.getElementById("story-next").textContent = storyIndex + 1 === storyPages.length ? "進む" : "次へ";
+      updateProgress();
+      window.scrollTo(0,0);
+    }
+
+    function nextStory() {
+      soundPage();
+      if (storyIndex + 1 < storyPages.length) {
+        storyIndex++;
+        renderStory();
+      } else if (storyDone) {
+        storyDone();
+      }
+    }
+
+    function showRoomStory(index) {
+      current = index;
+      const room = rooms[index];
+      const pages = room.storyPages.map((body, i) => ({
+        label: room.label,
+        title: i === 0 ? room.title : "展示説明",
+        body
+      }));
+      showStory(pages, () => showPuzzleRoom(index));
+    }
+
+    function showPuzzleRoom(index) {
+      current = index;
+      const room = rooms[index];
+      hideAll();
+      document.getElementById("progress").classList.remove("hidden");
+      document.getElementById("screen-room").classList.remove("hidden");
+      document.getElementById("room-label").textContent = room.label;
+      document.getElementById("room-title").textContent = room.title;
+      document.getElementById("room-words").innerHTML = room.words;
+      document.getElementById("room-rule").textContent = room.rule;
+      document.getElementById("hint").textContent = room.hint;
+      document.getElementById("hint").style.display = "none";
+      document.getElementById("message").textContent = "";
+      document.getElementById("message").className = "message";
+      document.getElementById("answer").value = "";
+      updateProgress();
+      window.scrollTo(0,0);
+      setTimeout(() => document.getElementById("answer").focus(), 250);
+    }
+
+    function checkAnswer() {
+      const ans = norm(document.getElementById("answer").value);
+      const room = rooms[current];
+      const msg = document.getElementById("message");
+      if (ans === room.answer) {
+        soundCorrect();
+        msg.textContent = "正解。閲覧済みです。";
+        msg.className = "message ok";
+        solved[current] = room.answer;
+        setTimeout(() => {
+          if (current + 1 < rooms.length) showRoomStory(current + 1);
+          else showFinal();
+        }, 850);
+      } else {
+        soundWrong();
+        msg.textContent = "まだ違うみたい。展示記録の最初を見てみて。";
+        msg.className = "message ng";
+      }
+    }
+
+    function toggleHint() {
+      soundClick();
+      const hint = document.getElementById("hint");
+      hint.style.display = hint.style.display === "block" ? "none" : "block";
+    }
+
+    function showFinal() {
+      soundPage();
+      hideAll();
+      document.getElementById("screen-final").classList.remove("hidden");
+      const list = rooms.map((r, i) => `${i + 1}. ${r.answer}`).join("<br>");
+      document.getElementById("collected").innerHTML = list;
+      document.getElementById("final-hint").style.display = "none";
+      document.getElementById("final-message").textContent = "";
+      document.getElementById("final-answer").value = "";
+      updateProgress();
+      window.scrollTo(0,0);
+      setTimeout(() => document.getElementById("final-answer").focus(), 250);
+    }
+
+    function toggleFinalHint() {
+      soundClick();
+      const hint = document.getElementById("final-hint");
+      hint.style.display = hint.style.display === "block" ? "none" : "block";
+    }
+
+    function checkFinal() {
+      const ans = norm(document.getElementById("final-answer").value);
+      const msg = document.getElementById("final-message");
+      if (ans === "はじめるだけ") {
+        soundEnding();
+        msg.textContent = "提出完了。出口が開きます。";
+        msg.className = "message ok";
+        setTimeout(() => showEnding(), 900);
+      } else {
+        soundWrong();
+        msg.textContent = "まだ出口は開かないみたい。集めた答えの最初の文字を見てみて。";
+        msg.className = "message ng";
+      }
+    }
+
+    function showEnding() {
+      endingIndex = 0;
+      renderEnding();
+    }
+
+    function renderEnding() {
+      const page = endingPages[endingIndex];
+      hideAll();
+      document.getElementById("screen-ending").classList.remove("hidden");
+      document.getElementById("ending-title").textContent = page.title;
+      document.getElementById("ending-body").innerHTML = page.body;
+      document.getElementById("ending-count").textContent = `${endingIndex + 1} / ${endingPages.length}`;
+      document.getElementById("ending-next").classList.toggle("hidden", endingIndex + 1 === endingPages.length);
+      document.getElementById("ending-actions").classList.toggle("hidden", endingIndex + 1 !== endingPages.length);
+      updateProgress();
+      window.scrollTo(0,0);
+    }
+
+    function nextEnding() {
+      soundPage();
+      if (endingIndex + 1 < endingPages.length) {
+        endingIndex++;
+        renderEnding();
+      }
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        if (!document.getElementById("screen-room").classList.contains("hidden")) checkAnswer();
+        if (!document.getElementById("screen-final").classList.contains("hidden")) checkFinal();
+      }
+    });
+  </script>
+</body>
+</html>
