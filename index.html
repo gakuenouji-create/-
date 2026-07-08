@@ -7,23 +7,16 @@
   <meta name="description" content="まだ何者にもなっていない人、入場無料。スマホで遊べる物語謎解きゲーム。" />
   <style>
     :root{
-      --bg:#050505;
-      --panel:rgba(10,10,12,.72);
-      --line:rgba(255,238,202,.28);
-      --line2:rgba(255,238,202,.16);
       --ink:#fff2d7;
       --ink2:#d9c9a8;
-      --muted:#938975;
-      --gold:#ffe6ae;
       --ok:#b6e6aa;
       --ng:#ffafa6;
       --glow:0 0 6px rgba(255,245,222,.9), 0 0 22px rgba(255,223,170,.42);
     }
 
     *{box-sizing:border-box}
-    html,body{height:100%}
+    html,body{min-height:100%;margin:0}
     body{
-      margin:0;
       color:var(--ink);
       background:
         radial-gradient(circle at 50% 22%, rgba(255,230,174,.12), transparent 22rem),
@@ -46,6 +39,7 @@
       background-size:2px 2px,46px 46px,46px 46px;
       opacity:.48;
       mix-blend-mode:screen;
+      z-index:0;
     }
     body::after{
       content:"";
@@ -68,92 +62,19 @@
       z-index:1;
     }
 
-    .topbar{
-      position:relative;
-      z-index:20;
-      padding:8px 0 10px;
-      background:transparent;
+    #view{animation:fade .35s ease both}
+    @keyframes fade{
+      from{opacity:0;transform:translateY(8px)}
+      to{opacity:1;transform:translateY(0)}
     }
-    body.is-title #topbar{display:none !important}
-
-    .toprow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      min-height:44px;
-    }
-    .progress-wrap{
-      flex:1;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      opacity:.95;
-    }
-    .progress-label{
-      font-size:.72rem;
-      color:var(--ink2);
-      text-shadow:var(--glow);
-      white-space:nowrap;
-    }
-    .progress-track{
-      height:2px;
-      flex:1;
-      position:relative;
-      background:rgba(255,238,202,.16);
-      box-shadow:0 0 12px rgba(255,225,174,.12);
-    }
-    .progress-fill{
-      height:100%;
-      width:0%;
-      background:var(--gold);
-      box-shadow:var(--glow);
-      transition:width .35s ease;
-    }
-
-    .bgm{
-      display:flex;
-      align-items:center;
-      gap:7px;
-      color:var(--ink);
-      font-size:.8rem;
-      text-shadow:var(--glow);
-      background:transparent;
-      border:0;
-      padding:4px 0;
-      width:auto;
-      cursor:pointer;
-    }
-    .bgm .icon{
-      width:36px;
-      height:36px;
-      border:1px solid var(--line);
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      box-shadow:0 0 16px rgba(255,230,174,.12);
-      font-size:1.12rem;
-    }
-
-    .screen{
-      min-height:calc(100svh - 70px);
-      display:none;
-      animation:fade .35s ease both;
-    }
-    .screen.active{display:block}
-    .screen.center.active{display:flex}
 
     .center{
-      min-height:100dvh;
+      min-height:calc(100dvh - 36px);
       display:flex;
       flex-direction:column;
       align-items:center;
       justify-content:center;
       text-align:center;
-    }
-    @keyframes fade{
-      from{opacity:0;transform:translateY(8px)}
-      to{opacity:1;transform:translateY(0)}
     }
 
     .title-box{
@@ -197,12 +118,13 @@
       text-shadow:var(--glow);
       box-shadow:var(--glow), inset 0 0 20px rgba(255,238,202,.04);
       cursor:pointer;
-      transition:transform .18s ease, background .18s ease;
     }
-    .primary:active{transform:scale(.985)}
-    .primary:hover{background:rgba(255,238,202,.06)}
+    .primary:active,.btn:active{transform:scale(.985)}
 
-    .page{padding:44px 8px 32px}
+    .page{
+      min-height:calc(100dvh - 36px);
+      padding:28px 8px 32px;
+    }
 
     .label{
       width:max-content;
@@ -321,8 +243,8 @@
       text-align:center;
       color:var(--ink);
       text-shadow:var(--glow);
-      font-size:clamp(1.08rem,4.8vw,1.46rem);
-      line-height:2.15;
+      font-size:clamp(1.02rem,4.5vw,1.36rem);
+      line-height:2.08;
       padding:12px 12px;
     }
     .clue .line + .line{border-top:1px solid rgba(255,238,202,.23)}
@@ -411,7 +333,7 @@
       border-bottom:1px solid rgba(255,245,222,.16);
       color:var(--ink);
       text-shadow:var(--glow);
-      font-size:1.15rem;
+      font-size:1.12rem;
     }
     .row:last-child{border-bottom:0}
     .num{
@@ -453,353 +375,333 @@
       letter-spacing:.12em;
     }
 
-    .hidden{display:none !important}
+
+    .crossword-note{
+      max-width:560px;
+      margin:0 auto 14px;
+      text-align:center;
+      color:var(--ink2);
+      font-family:"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+      font-size:.9rem;
+      letter-spacing:.04em;
+      text-shadow:0 0 8px rgba(255,238,202,.28);
+    }
+    .crossword{
+      width:max-content;
+      max-width:100%;
+      margin:6px auto 18px;
+      display:grid;
+      gap:5px;
+      justify-content:center;
+    }
+    .cw-row{
+      display:flex;
+      justify-content:center;
+      gap:5px;
+    }
+    .cw-cell{
+      width:39px;
+      height:39px;
+      border:1px solid rgba(255,245,222,.58);
+      display:grid;
+      place-items:center;
+      color:var(--ink2);
+      box-shadow:0 0 10px rgba(255,230,174,.09), inset 0 0 10px rgba(255,238,202,.025);
+      font-family:"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+      font-size:.86rem;
+      line-height:1;
+      position:relative;
+    }
+    .cw-cell.empty{
+      border-color:transparent;
+      box-shadow:none;
+      background:transparent;
+    }
+    .cw-cell.key{
+      border-color:rgba(255,245,222,.95);
+      background:rgba(255,238,202,.09);
+      box-shadow:var(--glow), inset 0 0 14px rgba(255,238,202,.06);
+    }
+    .cw-num{
+      position:absolute;
+      top:3px;
+      left:5px;
+      font-size:.62rem;
+      color:var(--ink);
+      text-shadow:var(--glow);
+    }
+    .cw-clues{
+      text-align:left;
+      max-width:440px;
+      margin:0 auto;
+      font-family:"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+      font-size:.92rem;
+      line-height:1.8;
+      color:var(--ink2);
+      text-shadow:0 0 8px rgba(255,238,202,.28);
+    }
+    .cw-clues div{
+      border-top:1px solid rgba(255,238,202,.14);
+      padding:6px 0;
+    }
 
     @media (max-width:420px){
       .app{padding-left:14px;padding-right:14px}
-      .page{padding-top:34px}
+      .page{padding-top:28px}
       .buttons{gap:10px}
       .btn{font-size:.94rem}
       .quote-box{font-size:1.02rem}
       .bracket{padding-left:18px;padding-right:18px}
       .heading{letter-spacing:.08em}
-      .toprow{align-items:flex-start}
-      .progress-label{font-size:.68rem}
     }
   </style>
 </head>
 
-<body class="is-title">
+<body>
   <main class="app">
-    <div class="topbar hidden" id="topbar">
-      <div class="toprow">
-        <div class="progress-wrap">
-          <span class="progress-label" id="progressText">展示進行度</span>
-          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-        </div>
-        <button class="bgm" id="bgmBtn" type="button" aria-label="BGMのオンオフ">
-          <span class="icon">♪</span><span id="bgmText">BGM<br>OFF</span>
-        </button>
-      </div>
-    </div>
-
-    <section class="screen center active" id="titleScreen" style="display:flex;">
-      <div class="title-box">
-        <div class="title-grid" aria-label="未提出博覧会">
-          <span>未</span><span>提</span>
-          <span>出</span><span>博</span>
-          <span>覧</span><span>会</span>
-        </div>
-      </div>
-      <p class="copy">まだ何者にもなっていない人、入場無料。</p>
-      <button class="primary" id="startBtn" type="button">はじめる</button>
-    </section>
-
-    <section class="screen page" id="storyScreen">
-      <div class="label" id="storyLabel"></div>
-      <h2 class="heading" id="storyHeading"></h2>
-      <div class="text" id="storyBody"></div>
-      <button class="primary" id="storyNext" type="button">次へ</button>
-      <div class="count" id="storyCount"></div>
-    </section>
-
-    <section class="screen page" id="puzzleScreen">
-      <div class="label" id="puzzleLabel"></div>
-      <h2 class="heading" id="puzzleHeading"></h2>
-      <div class="text" id="puzzleStory"></div>
-      <div class="bracket" id="puzzleQuote"></div>
-      <div class="divider-title">手がかり</div>
-      <div class="clue" id="clueBox"></div>
-      <p class="instruction" id="instruction"></p>
-      <input class="input" id="answerInput" placeholder="こたえ" autocomplete="off" autocapitalize="off" />
-      <div class="buttons">
-        <button class="btn" id="submitBtn" type="button">送信する</button>
-        <button class="btn" id="hintBtn" type="button">ヒント</button>
-      </div>
-      <div class="hint" id="hintBox"></div>
-      <div class="msg" id="answerMsg"></div>
-    </section>
-
-    <section class="screen page" id="finalScreen">
-      <div class="label">出口</div>
-      <h2 class="heading">出口前の提出箱</h2>
-      <div class="text">
-        <p>六つの展示を見終えると、最初の受付に戻っていた。</p>
-        <p>片目のだるまは、同じ場所にいる。けれど、少しだけ表情が変わったように見えた。</p>
-        <p>受付の横に、学校の職員室前にありそうな古い提出箱が置かれている。</p>
-      </div>
-      <div class="collected" id="collectedList"></div>
-      <div class="bracket">展示品の名前を、<br>最初から見てください。</div>
-      <input class="input" id="finalInput" placeholder="さいごのこたえ" autocomplete="off" autocapitalize="off" />
-      <div class="buttons">
-        <button class="btn full" id="finalSubmit" type="button">提出する</button>
-        <button class="btn full" id="finalHintBtn" type="button">ヒント</button>
-      </div>
-      <div class="hint" id="finalHint">六つの答えの最初の文字を順番に読んでみてください。</div>
-      <div class="msg" id="finalMsg"></div>
-    </section>
+    <div id="view"></div>
   </main>
 
   <script>
-    const $ = (id) => document.getElementById(id);
+    const view = document.getElementById("view");
 
     const introPages = [
-      {
-        label:"入口",
-        heading:"招待券",
-        body:`<p>夜、机の引き出しの奥から、見覚えのないチケットが出てきた。</p><p>コンビニのレシートや、もう使わないポイントカードや、なぜ取ってあるのかわからないボタン電池の袋にまぎれて、それは妙にきれいな顔をしていた。</p><p>少し厚い紙でできていて、端だけが古い本みたいに茶色くなっている。</p><div class="quote-box">『未提出博覧会　招待券』</div>`
-      },
-      {
-        label:"入口",
-        heading:"展示対象",
-        body:`<p>身に覚えはなかった。</p><p>博覧会に行く予定もないし、そもそも未提出という言葉に招待される筋合いもない。</p><p>裏返すと、小さな文字があった。</p><div class="bracket">やらなかったことは、<br>失敗ではありません。<br>ただし、展示対象です。</div><p>かなり嫌な招待券だった。</p>`
-      },
-      {
-        label:"入口",
-        heading:"入口",
-        body:`<p>捨てようとして、指が止まった。</p><p>たぶん、自分でも少しだけ分かっていた。見ないふりをしているものほど、ちゃんと名前がついている。</p><p>始めなかったこと。出さなかったもの。笑ってごまかした憧れ。まだ本気じゃないから、という便利な言い訳。</p><p>チケットを握ると、部屋の壁に細い切れ目が入った。</p>`
-      },
-      {
-        label:"入口",
-        heading:"入場無料",
-        body:`<p>壁紙が静かにめくれて、そこに小さな入口が現れる。</p><p>入口の向こうは暗く、古い体育館の倉庫みたいな匂いがした。</p><p>ほこり、紙、鉄、少しだけ湿った木材。</p><p>ドアの上には、金色の文字でこう書かれている。</p><div class="quote-box">まだ何者にもなっていない人、入場無料。</div><p>失礼だな、と思った。</p><p>でも、入った。</p>`
-      },
-      {
-        label:"受付",
-        heading:"片目のだるま",
-        body:`<p>受付には、片目だけ黒く塗られただるまが座っていた。座っていた、というより、置かれていた。でも口がある。かなり小さくて、態度は大きい。</p><p>「ようこそ、未提出博覧会へ」</p><p>「帰っていいですか」</p><p>「入場後の即時退館は可能です。ただし、未閲覧の展示は夢に出ます」</p><p>「脅し？」</p><p>「案内です」</p>`
-      },
-      {
-        label:"受付",
-        heading:"展示規約",
-        body:`<p>だるまは、ころんと少しだけ揺れた。片方の目は白いままだった。</p><p>「ここには、失敗したものは展示されません」</p><p>「じゃあ何があるの」</p><p>「失敗する前にしまわれたものです」</p><p>その言い方が、少し嫌だった。</p><p>だるまは小さな閲覧証を差し出した。名前を書く欄は空白だった。</p><p>「六つの展示を閲覧してください。出口で必要になります」</p>`
-      }
+      {label:"入口", heading:"招待券", body:`<p>夜、机の引き出しの奥から、見覚えのないチケットが出てきた。</p><p>コンビニのレシートや、もう使わないポイントカードや、なぜ取ってあるのかわからないボタン電池の袋にまぎれて、それは妙にきれいな顔をしていた。</p><p>少し厚い紙でできていて、端だけが古い本みたいに茶色くなっている。</p><div class="quote-box">『未提出博覧会　招待券』</div>`},
+      {label:"入口", heading:"展示対象", body:`<p>身に覚えはなかった。</p><p>博覧会に行く予定もないし、そもそも未提出という言葉に招待される筋合いもない。</p><p>裏返すと、小さな文字があった。</p><div class="bracket">やらなかったことは、<br>失敗ではありません。<br>ただし、展示対象です。</div><p>かなり嫌な招待券だった。</p>`},
+      {label:"入口", heading:"入口", body:`<p>捨てようとして、指が止まった。</p><p>たぶん、自分でも少しだけ分かっていた。見ないふりをしているものほど、ちゃんと名前がついている。</p><p>始めなかったこと。出さなかったもの。笑ってごまかした憧れ。まだ本気じゃないから、という便利な言い訳。</p><p>チケットを握ると、部屋の壁に細い切れ目が入った。</p>`},
+      {label:"入口", heading:"入場無料", body:`<p>壁紙が静かにめくれて、そこに小さな入口が現れる。</p><p>入口の向こうは暗く、古い体育館の倉庫みたいな匂いがした。</p><p>ほこり、紙、鉄、少しだけ湿った木材。</p><p>ドアの上には、金色の文字でこう書かれている。</p><div class="quote-box">まだ何者にもなっていない人、入場無料。</div><p>失礼だな、と思った。</p><p>でも、入った。</p>`},
+      {label:"受付", heading:"片目のだるま", body:`<p>受付には、片目だけ黒く塗られただるまが座っていた。座っていた、というより、置かれていた。でも口がある。かなり小さくて、態度は大きい。</p><p>「ようこそ、未提出博覧会へ」</p><p>「帰っていいですか」</p><p>「入場後の即時退館は可能です。ただし、未閲覧の展示は夢に出ます」</p><p>「脅し？」</p><p>「案内です」</p>`},
+      {label:"受付", heading:"展示規約", body:`<p>だるまは、ころんと少しだけ揺れた。片方の目は白いままだった。</p><p>「ここには、失敗したものは展示されません」</p><p>「じゃあ何があるの」</p><p>「失敗する前にしまわれたものです」</p><p>その言い方が、少し嫌だった。</p><p>だるまは小さな閲覧証を差し出した。名前を書く欄は空白だった。</p><p>「六つの展示を閲覧してください。出口で必要になります」</p>`}
     ];
 
     const rooms = [
       {
         label:"第一展示室",
-        heading:"はじまりの箱",
-        answer:"はこ",
+        heading:"箱",
+        display:"箱",
+        answer:"えんぴつ",
         before:[
           `<p>最初の展示室には、箱がひとつだけ置かれていた。</p><p>古い木箱で、ふたには小さな傷がいくつもある。開けようと思えば開けられそうなのに、なぜか誰も開けなかったような箱だった。</p>`,
-          `<p>中には、未使用のノート、削られていない鉛筆、開封されなかった絵の具、買っただけのペン、最初のページだけ日付が書かれた手帳が入っている。</p><p>説明板には、こうあった。</p><div class="bracket">始める前なら、まだ下手じゃない。<br>始める前なら、まだ負けていない。<br>だからこの箱は、ずっと閉じられていました。</div><p>その言葉は少しだけ優しくて、かなりずるかった。</p>`
+          `<p>中には、未使用のノート、削られていない鉛筆、開封されなかった絵の具、買っただけのペン、最初のページだけ日付が書かれた手帳が入っている。</p><div class="bracket">始める前なら、まだ下手じゃない。<br>始める前なら、まだ負けていない。<br>だからこの箱は、ずっと閉じられていました。</div>`
         ],
-        puzzleStory:`<p>箱のふたには、二枚のラベルが貼られている。</p>`,
-        quote:`この箱の名前は、<br>ラベルの最初にあります。`,
-        clue:["はじまりのノート","こわくて閉じた箱"],
-        instruction:"答えをひらがなで入力してください。",
-        hint:"ラベルの一番最初の文字だけを順番に読んでみてください。",
+        puzzleStory:`<p>箱の底には、四角いマスがつながった紙が入っていた。</p><p>リストの五つの言葉をすべて埋めると、番号のついた光るマスだけに文字が残るらしい。</p>`,
+        quote:`クロスワードを埋めて、<br>1〜4のマスを順番に読んでください。`,
+        clue:`<p class="crossword-note">リストの言葉をすべて埋めよう。<br>1〜4を順に読むと答えになります。</p>
+          <div class="crossword" aria-label="箱のクロスワード">
+            <div class="cw-row">
+              <span class="cw-cell"></span>
+              <span class="cw-cell"></span>
+              <span class="cw-cell key"><span class="cw-num">1</span></span>
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell empty"></span>
+            </div>
+            <div class="cw-row">
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell key"><span class="cw-num">3</span></span>
+              <span class="cw-cell key"><span class="cw-num">2</span></span>
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell empty"></span>
+            </div>
+            <div class="cw-row">
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell"></span>
+              <span class="cw-cell"></span>
+              <span class="cw-cell"></span>
+            </div>
+            <div class="cw-row">
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell key"><span class="cw-num">4</span></span>
+              <span class="cw-cell empty"></span>
+              <span class="cw-cell"></span>
+            </div>
+          </div>
+          <div class="cw-clues">
+            <div>A　ノートを置いて書く家具。</div>
+            <div>B　紙をとめる小さな針。</div>
+            <div>C　煙が外へ出ていくところ。</div>
+            <div>D　時間を見るもの。</div>
+            <div>E　座るもの。</div>
+          </div>`,
+        hint:"Aは「つくえ」、Bは「ぴん」、Cは「えんとつ」、Dは「とけい」、Eは「いす」。番号のマスを1から順番に読むと、箱の中に入っていたものになります。",
         after:[
-          `<p>答えを入力すると、箱のふたが少しだけ開いた。</p><p>中のノートの一冊に、薄く文字が浮かぶ。</p><div class="quote-box">閲覧済み</div>`,
-          `<p>どこからか、受付のだるまの声が聞こえた。</p><p>「始めなかったものは、まだ腐ってはいません。少しほこりっぽいだけです」</p><p>少し腹が立った。でも、少しだけ安心もした。</p>`
+          `<p>答えを入力すると、箱のふたが少しだけ開いた。</p><p>中に入っていた鉛筆が一本、ころんと転がる。</p><div class="quote-box">閲覧済み</div>`,
+          `<p>どこからか、受付のだるまの声が聞こえた。</p><p>「書かなかったものは、まだ消えていません。芯が少し丸くなっただけです」</p><p>少し腹が立った。でも、少しだけ安心もした。</p>`
         ]
       },
       {
         label:"第二展示室",
-        heading:"じてんしゃ練習場",
-        answer:"じてんしゃ",
+        heading:"自転車",
+        display:"自転車",
+        answer:"ぷらいど",
         before:[
           `<p>次の部屋は、夜の校庭みたいだった。</p><p>床には白いラインが引かれていて、真ん中に補助輪つきの自転車が一台置かれている。ハンドルには赤いリボンが結ばれていて、タイヤにはほこりがかぶっていた。</p>`,
-          `<p>床には転んだ跡みたいな白い線がいくつも残っている。実際に転んだ跡ではない。転ぶ前に引き返した跡だ。</p><div class="bracket">転ぶのが怖かったのではありません。<br>転ぶところを見られるのが怖かったのです。</div><p>それは、かなり正確だった。</p>`
+          `<p>床には転んだ跡みたいな白い線がいくつも残っている。実際に転んだ跡ではない。転ぶ前に引き返した跡だ。</p><div class="bracket">転ぶのが怖かったのではありません。<br>転ぶところを見られるのが怖かったのです。</div>`
         ],
-        puzzleStory:`<p>自転車の横には、練習日記が開かれている。</p><p>子どもの字みたいに少し丸く、でもところどころ大人の言い訳みたいに固い。</p>`,
-        quote:`練習日記の最初の文字を<br>拾ってください。`,
-        clue:["じぶんだけ遅い","てを離せない","んー、今日はやめる","しゃりんだけ回る"],
-        instruction:"答えをひらがなで入力してください。",
-        hint:"四つの行の最初の文字です。部屋の真ん中に置かれているものになります。",
+        puzzleStory:`<p>自転車のカゴには、小さなメモが入っていた。</p><p>紙の端は少し破れていて、何度か折りたたまれた跡がある。</p><div class="bracket">走るために必要だったものから、<br>あなたの捨てられなかったものを<br>拾ってください。</div>`,
+        quote:`メモに残された言葉を読み、<br>必要だったものから拾ってください。`,
+        clue:[
+          "後ろのタイヤに一回、空気を入れる。",
+          "暗い夜道の前方には、二つの石ころ。",
+          "真ん中には、一人で座る。",
+          "必要だったもの：ポンプ／ライト／サドル"
+        ],
+        hint:"「後ろ」「前方」「真ん中」と、「一回」「二つ」「一人」が拾う場所と数を示しているかもしれません。",
         after:[
-          `<p>正解の表示と同時に、自転車のベルが小さく鳴った。</p><p>ちりん、という頼りない音だった。けれど、部屋の中では妙に響いた。</p>`,
-          `<p>補助輪は外れなかった。タイヤも回らなかった。</p><p>でも、ハンドルの赤いリボンだけが少し揺れた。</p>`
+          `<p>答えを入力すると、自転車のベルが小さく鳴った。</p><p>ちりん、という頼りない音だった。けれど、部屋の中では妙に響いた。</p>`,
+          `<p>補助輪は外れなかった。タイヤも回らなかった。</p><p>でも、カゴの中のメモだけが、少し軽くなった気がした。</p><p>捨てたふりをしていたものは、まだちゃんと残っていた。</p>`
         ]
       },
       {
         label:"第三展示室",
-        heading:"めがね客席",
+        heading:"めがね",
+        display:"めがね",
         answer:"めがね",
         before:[
-          `<p>三つ目の展示室には、客席があった。</p><p>小さな劇場のように、黒い椅子が何列も並んでいる。けれど、人は座っていない。代わりに、椅子の上にはたくさんの眼鏡だけが置かれていた。</p>`,
-          `<p>丸い眼鏡。細い眼鏡。度が強そうな眼鏡。レンズが少し曇った眼鏡。</p><p>どれも舞台の方を向いている。</p><p>舞台の上には、誰もいない。</p><div class="bracket">客席からなら、何にでもなれました。<br>でも、舞台に立たない限り、<br>自分の名前は呼ばれませんでした。</div>`
+          `<p>三つ目の展示室には、客席があった。</p><p>小さな劇場のように、黒い椅子が何列も並んでいる。けれど、人は座っていない。代わりに、椅子の上にはたくさんのめがねだけが置かれていた。</p>`,
+          `<p>丸いめがね。細いめがね。度が強そうなめがね。レンズが少し曇っためがね。</p><p>どれも舞台の方を向いている。</p><div class="bracket">客席からなら、何にでもなれました。<br>でも、舞台に立たない限り、<br>自分の名前は呼ばれませんでした。</div>`
         ],
         puzzleStory:`<p>舞台の上には、三枚の札が置かれている。</p>`,
-        quote:`眼鏡たちが見ていたものの、<br>最初の文字を読んでください。`,
+        quote:`めがねたちが見ていたものの、<br>最初の文字を読んでください。`,
         clue:["めをそらした客席","がんばる人の背中","ねたましい拍手"],
-        instruction:"答えをひらがなで入力してください。",
         hint:"三枚の札の最初の文字です。客席に置かれていたものになります。",
         after:[
-          `<p>入力すると、客席の眼鏡が一斉にこちらを向いた気がした。</p><p>もちろん、眼鏡に顔はない。けれど、見られている感じがした。</p>`,
+          `<p>入力すると、客席のめがねが一斉にこちらを向いた気がした。</p><p>もちろん、めがねに顔はない。けれど、見られている感じがした。</p>`,
           `<p>舞台袖から、拍手の音が一回だけした。</p><p>ぱち。</p><p>ひとつだけだから、よけいに恥ずかしかった。</p>`
         ]
       },
       {
         label:"第四展示室",
-        heading:"るすばん部屋",
-        answer:"るすばん",
+        heading:"留守番電話",
+        display:"留守番電話",
+        answer:"るすばんでんわ",
         before:[
-          `<p>四つ目の部屋は、夕方の家みたいだった。</p><p>カーテンは半分だけ閉まっていて、テレビはついているのに音がない。テーブルの上には冷めたココアが置いてある。湯気はもう出ていない。</p>`,
-          `<p>壁には古い電話機がかかっていた。留守番電話の赤いランプが点滅している。</p><div class="bracket">夢中な人を笑うのは簡単でした。<br>その人たちが、自分よりずっと勇敢だと<br>気づかないふりをして。</div>`
+          `<p>四つ目の部屋は、夕方の家みたいだった。</p><p>カーテンは半分だけ閉まっていて、テレビはついているのに音がない。テーブルの上には冷めたココアが置いてある。</p>`,
+          `<p>壁には古い留守番電話がかかっていた。赤いランプが点滅している。</p><div class="bracket">夢中な人を笑うのは簡単でした。<br>その人たちが、自分よりずっと勇敢だと<br>気づかないふりをして。</div>`
         ],
-        puzzleStory:`<p>電話機の再生ボタンを押すと、三件のメッセージが流れた。</p>`,
-        quote:`留守番電話の最初の音を<br>拾ってください。`,
-        clue:["るすにしています。まだ本気ではないので。","すきだったものは、もう子どもっぽいので。","ばんごうを消しました。かけ直さなくていいので。"],
-        instruction:"答えをひらがなで入力してください。",
-        hint:"三件の留守番電話の最初の音だけを続けてください。",
+        puzzleStory:`<p>再生ボタンを押すと、七件のメッセージが流れた。</p>`,
+        quote:`留守番電話の最初の音を<br>順番に拾ってください。`,
+        clue:["るすにしています。まだ本気ではないので。","すきだったものは、もう子どもっぽいので。","ばんごうを消しました。かけ直さなくていいので。","でないまま、夜が終わりました。","んー、また今度にします。","わらってごまかしたので、大丈夫です。"],
+        hint:"六件のメッセージの最初の音だけを続けてください。",
         after:[
-          `<p>正解の表示が出ると、電話機の赤いランプが消えた。</p><p>部屋は急に静かになる。音のないテレビの中で、知らない誰かが笑っていた。</p>`,
+          `<p>正解の表示が出ると、留守番電話の赤いランプが消えた。</p><p>部屋は急に静かになる。音のないテレビの中で、知らない誰かが笑っていた。</p>`,
           `<p>テーブルのココアに触れると、もう冷たかった。</p><p>でも、甘い匂いはまだ少し残っていた。</p>`
         ]
       },
       {
         label:"第五展示室",
-        heading:"だるま応募箱",
-        answer:"だるま",
+        heading:"台本",
+        display:"台本",
+        answer:"だいほん",
         before:[
-          `<p>五つ目の部屋には、赤いだるまと応募箱が並んでいた。</p><p>壁一面に、出されなかった紙が貼られている。コンテストの応募用紙。履歴書。企画書。申込フォームを印刷したもの。途中まで書いたメール。</p>`,
-          `<p>真ん中に置かれただるまには、片目しか入っていなかった。受付のだるまと同じだ。</p><div class="bracket">目標はありました。<br>でも、目を入れるほどではありませんでした。<br>本気だったことにすると、落ちた時に困るからです。</div>`
+          `<p>五つ目の部屋には、小さな舞台があった。</p><p>幕は半分だけ開いていて、床の真ん中に古い台本が一冊落ちている。ページの端には、何度も折り直した跡があった。</p>`,
+          `<p>台本には、消された台詞が多すぎた。言う予定だった言葉。言えなかった言葉。いい人の役を続けるために、飲み込んだ言葉。</p><div class="bracket">本音はありました。<br>でも、台詞にするほどではありませんでした。<br>言ってしまうと、役が終わるからです。</div>`
         ],
-        puzzleStory:`<p>応募箱の上に、三枚の紙が置かれている。</p>`,
-        quote:`応募箱に残った紙の、<br>最初の文字を読んでください。`,
-        clue:["ださなかった応募用紙","るールだけ調べた夜","まにあわないふりをした朝"],
-        instruction:"答えをひらがなで入力してください。",
-        hint:"赤くて、願いごとの時によく見るものです。",
+        puzzleStory:`<p>台本の余白には、三つのメモが残されている。</p>`,
+        quote:`余白のメモの最初の文字を<br>読んでください。`,
+        clue:["だいじな場面で黙った","いい人の役だけ選んだ","ほんとうの台詞は書けなかった"],
+        hint:"三つのメモの頭文字です。舞台に落ちているものになります。",
         after:[
-          `<p>入力すると、部屋のだるまの白い目に、ほんの少しだけ黒がにじんだ。</p><p>完全には塗られない。けれど、何もなかったわけではなくなった。</p>`,
-          `<p>どこからか受付係のだるまの声がした。</p><p>「本気じゃなかったことにするのは、とても便利です」</p><p>「うるさいな」</p><p>「便利なものほど、棚卸しが必要です」</p>`
+          `<p>答えを入力すると、台本のページが勝手に一枚めくれた。</p><p>そこには、たった一行だけ印刷されている。</p><div class="quote-box">言わなかったことも、消えたわけではない。</div>`,
+          `<p>舞台の照明が少しだけ明るくなった。</p><p>けれど、誰も登場しない。まだ、出番の前みたいだった。</p>`
         ]
       },
       {
         label:"第六展示室",
-        heading:"けむり出口前",
-        answer:"けむり",
+        heading:"消しゴム",
+        display:"消しゴム",
+        answer:"けしごむ",
         before:[
-          `<p>最後の展示室は、少し煙たかった。</p><p>火はどこにもないのに、白い煙だけがゆっくり漂っている。焦げた匂いではない。燃える前に湿ってしまった紙みたいな匂いだった。</p>`,
-          `<p>部屋の奥には、小さな灰皿がある。灰はない。代わりに、丸められた紙が何枚も入っていた。</p><p>「どうせ無理」「才能がない」「タイミングが悪い」「今じゃない」「ちゃんと準備してから」</p><p>どれも、よく知っている言葉だった。</p><div class="bracket">夢は燃えませんでした。<br>燃やすところまで、持っていけなかったからです。<br>残ったのは、言い訳に似た白い煙だけでした。</div>`
+          `<p>最後の展示室には、机がひとつだけあった。</p><p>机の上には、小さく丸くなった消しゴムが置かれている。角はもうなくて、白かったはずの表面は少し灰色になっていた。</p>`,
+          `<p>まわりには、消しカスが雪みたいに散らばっている。けれど、紙はどこにもない。</p><div class="bracket">間違いを消したのではありません。<br>間違う前の線まで、消していました。<br>白紙は、とても安全でした。</div>`
         ],
-        puzzleStory:`<p>煙の中に、三つの文字列が浮かび上がる。</p>`,
-        quote:`煙の中に残った言葉の、<br>最初の文字を読んでください。`,
-        clue:["けっきょく怖かった","むりだと先に言った","りゆうだけ増えた"],
-        instruction:"答えをひらがなで入力してください。",
-        hint:"火が消えたあとに残る、白くて薄いものです。",
+        puzzleStory:`<p>机の上には、消し残しみたいな四つの言葉がある。</p>`,
+        quote:`消し残しの最初の文字を<br>読んでください。`,
+        clue:["けっきょく消した","しっぱいする前に消した","ごまかして白紙にした","むかった先まで消した"],
+        hint:"四つの消し残しの頭文字です。机の上に置かれているものになります。",
         after:[
-          `<p>正解すると、部屋の煙が少しだけ晴れた。</p><p>奥に、出口の明かりが見える。</p>`,
-          `<p>真っ白な明かりではない。どちらかというと、閉店前の蛍光灯みたいな、少し疲れた光だった。</p><p>でも、出口だった。</p>`
+          `<p>正解すると、消しゴムの横に小さな線が一本だけ現れた。</p><p>消されずに残った、短い線だった。</p>`,
+          `<p>それだけなのに、部屋の空気が少し変わった。</p><p>白紙のままより、ずっと怖くて、少しだけましだった。</p>`
         ]
       }
     ];
 
     const endingPages = [
-      {
-        label:"閲覧終了",
-        heading:"はじめるだけ",
-        body:`<p>あなたが合言葉を入力すると、提出箱のふたが静かに開いた。</p><p>中には、未使用のノートが一冊だけ入っていた。表紙には何も書かれていない。題名も、目標も、計画も、夢もない。</p><p>ただ、最初のページだけが開いている。</p>`
-      },
-      {
-        label:"閲覧終了",
-        heading:"最初の一行",
-        body:`<p>ページの一番上に、薄い罫線が一本あった。</p><p>「これを出せばいいの？」</p><p>「はい」</p><p>「何を書けば？」</p><p>「何でも」</p><p>「何でもが一番困る」</p><p>「存じています」</p><p>だるまは、ころんと少し揺れた。</p><div class="bracket">何者かになる必要はありません。<br>提出物は、最初の一行だけです。</div>`
-      },
-      {
-        label:"閲覧終了",
-        heading:"提出",
-        body:`<p>ノートを見下ろした。白い紙が、やけに広く見える。</p><p>明日でいい。もっと準備してからでいい。ちゃんと決めてからでいい。誰かに見せられる形になってからでいい。</p><p>でも、ここは未提出博覧会だった。</p><p>成功したものは展示されない。失敗したものも展示されない。</p><p>展示されていたのは、失敗する前にしまわれたものだけだ。</p>`
-      },
-      {
-        label:"閲覧終了",
-        heading:"提出物",
-        body:`<p>箱。自転車。眼鏡。留守番電話。だるま。煙。</p><p>全部、どこかで自分を守っていた。</p><p>下手な自分を見ないために。転ぶところを見られないために。舞台に立たずに済むために。本気だったことにしないために。</p><p>だから、嫌いにはなれなかった。</p><p>でも、もう少しだけ外に出してもいい気がした。</p>`
-      },
-      {
-        label:"閲覧終了",
-        heading:"はじめるだけ",
-        body:`<p>あなたは、ノートの最初のページに小さく書いた。</p><div class="quote-box">はじめるだけ</div><p>書いた瞬間、何も起こらなかった。</p><p>ファンファーレも鳴らない。照明も変わらない。人生が急に始まるような音もしない。</p><p>ただ、提出箱が小さく音を立てて閉まった。</p><p>ことん。</p>`
-      },
-      {
-        label:"閲覧終了",
-        heading:"受理",
-        body:`<p>だるまが言った。</p><p>「提出、受理しました」</p><p>「これで何か変わる？」</p><p>「たぶん、あまり」</p><p>「ひどい」</p><p>「でも、未提出ではなくなりました」</p><p>その言葉だけが、少し遅れて胸に届いた。</p>`
-      },
-      {
-        label:"閲覧終了",
-        heading:"CLEAR",
-        body:`<p>たった一行。何の価値もないような、誰にも褒められないような、ただの一行。</p><p>それでも、何も出していなかった場所に、初めて何かを置いた。</p><p>出口の扉が開く。向こう側には、自分の部屋が見えた。机、引き出し、散らかったレシート、飲みかけの水。</p><p>何も変わっていない、いつもの部屋。</p><p>でも、未提出ではなくなった。</p><p>失敗できる場所まで、やっと来た気がした。</p><span class="stamp">CLEAR</span>`
-      }
+      {label:"閲覧終了", heading:"はじめるだけ", body:`<p>あなたが合言葉を入力すると、提出箱のふたが静かに開いた。</p><p>中には、未使用のノートが一冊だけ入っていた。表紙には何も書かれていない。題名も、目標も、計画も、夢もない。</p><p>ただ、最初のページだけが開いている。</p>`},
+      {label:"閲覧終了", heading:"最初の一行", body:`<p>ページの一番上に、薄い罫線が一本あった。</p><p>「これを出せばいいの？」</p><p>「はい」</p><p>「何を書けば？」</p><p>「何でも」</p><p>「何でもが一番困る」</p><p>「存じています」</p><p>だるまは、ころんと少し揺れた。</p><div class="bracket">何者かになる必要はありません。<br>提出物は、最初の一行だけです。</div>`},
+      {label:"閲覧終了", heading:"提出物", body:`<p>箱。自転車。めがね。留守番電話。台本。消しゴム。</p><p>全部、どこかで自分を守っていた。</p><p>下手な自分を見ないために。転ぶところを見られないために。舞台に立たずに済むために。電話に出ずに済むために。本音を台詞にしないために。間違う前に消すために。</p><p>だから、嫌いにはなれなかった。</p><p>でも、もう少しだけ外に出してもいい気がした。</p>`},
+      {label:"閲覧終了", heading:"はじめるだけ", body:`<p>あなたは、ノートの最初のページに小さく書いた。</p><div class="quote-box">はじめるだけ</div><p>書いた瞬間、何も起こらなかった。</p><p>ファンファーレも鳴らない。照明も変わらない。人生が急に始まるような音もしない。</p><p>ただ、提出箱が小さく音を立てて閉まった。</p><p>ことん。</p>`},
+      {label:"閲覧終了", heading:"受理", body:`<p>だるまが言った。</p><p>「提出、受理しました」</p><p>「これで何か変わる？」</p><p>「たぶん、あまり」</p><p>「ひどい」</p><p>「でも、未提出ではなくなりました」</p><p>その言葉だけが、少し遅れて胸に届いた。</p>`},
+      {label:"閲覧終了", heading:"CLEAR", body:`<p>たった一行。何の価値もないような、誰にも褒められないような、ただの一行。</p><p>それでも、何も出していなかった場所に、初めて何かを置いた。</p><p>出口の扉が開く。向こう側には、自分の部屋が見えた。机、引き出し、散らかったレシート、飲みかけの水。</p><p>何も変わっていない、いつもの部屋。</p><p>でも、未提出ではなくなった。</p><p>失敗できる場所まで、やっと来た気がした。</p><span class="stamp">CLEAR</span>`}
     ];
 
-    let mode = "title";
-    let narrativePages = [];
-    let narrativeIndex = 0;
-    let narrativeDone = null;
+    let pageList = [];
+    let pageIndex = 0;
+    let onDone = null;
     let roomIndex = 0;
-    let bgmOn = false;
-    let audioCtx = null;
-    let bgmNodes = [];
 
     function normalize(text){
       return (text || "").replace(/\s/g,"").replace(/[ァ-ン]/g, ch => String.fromCharCode(ch.charCodeAt(0)-0x60)).toLowerCase();
     }
 
-    function show(id){
-      document.querySelectorAll(".screen").forEach(s => {
-        s.classList.remove("active");
-        s.style.display = "none";
-      });
-
-      const target = $(id);
-      target.classList.add("active");
-      target.style.display = id === "titleScreen" ? "flex" : "block";
-
-      const isTitle = id === "titleScreen";
-      document.body.classList.toggle("is-title", isTitle);
-      $("topbar").classList.toggle("hidden", isTitle);
-      $("topbar").style.display = isTitle ? "none" : "block";
-
-      window.scrollTo(0, 0);
-      updateProgress();
+    function setView(html){
+      view.style.animation = "none";
+      view.offsetHeight;
+      view.innerHTML = html;
+      view.style.animation = "";
+      window.scrollTo(0,0);
     }
 
-    function updateProgress(){
-      let total = rooms.length + 2;
-      let value = 0;
-      if(mode === "intro") value = .5;
-      if(mode === "roomStory" || mode === "puzzle" || mode === "after") value = roomIndex + 1;
-      if(mode === "final") value = rooms.length + 1;
-      if(mode === "ending") value = total;
-      $("progressFill").style.width = Math.min(100,(value/total)*100) + "%";
-      $("progressText").textContent = mode === "puzzle" || mode === "roomStory" || mode === "after" ? `${roomIndex+1} / ${rooms.length}` : "展示進行度";
+    function renderTitle(){
+      setView(`
+        <section class="center">
+          <div class="title-box">
+            <div class="title-grid" aria-label="未提出博覧会">
+              <span>未</span><span>提</span>
+              <span>出</span><span>博</span>
+              <span>覧</span><span>会</span>
+            </div>
+          </div>
+          <p class="copy">まだ何者にもなっていない人、入場無料。</p>
+          <button class="primary" onclick="startGame()" type="button">はじめる</button>
+        </section>
+      `);
     }
 
-    function showNarrative(pages, done, newMode){
-      narrativePages = pages;
-      narrativeIndex = 0;
-      narrativeDone = done;
-      mode = newMode;
-      renderNarrative();
+    function showPages(pages, done, finalLabel="進む"){
+      pageList = pages;
+      pageIndex = 0;
+      onDone = done;
+      renderPage(finalLabel);
     }
 
-    function renderNarrative(){
-      const p = narrativePages[narrativeIndex];
-      $("storyLabel").textContent = p.label;
-      $("storyHeading").textContent = p.heading;
-      $("storyBody").innerHTML = p.body;
-      $("storyCount").textContent = `${narrativeIndex+1} / ${narrativePages.length}`;
-      $("storyNext").textContent = narrativeIndex + 1 === narrativePages.length ? (mode === "intro" ? "入場する" : "進む") : "次へ";
-      show("storyScreen");
+    function renderPage(finalLabel="進む"){
+      const p = pageList[pageIndex];
+      const buttonText = pageIndex + 1 === pageList.length ? finalLabel : "次へ";
+      setView(`
+        <section class="page">
+          <div class="label">${p.label}</div>
+          <h2 class="heading">${p.heading}</h2>
+          <div class="text">${p.body}</div>
+          <button class="primary" onclick="nextPage()" type="button">${buttonText}</button>
+          <div class="count">${pageIndex+1} / ${pageList.length}</div>
+        </section>
+      `);
     }
 
-    function nextNarrative(){
-      pageSound();
-      if(narrativeIndex + 1 < narrativePages.length){
-        narrativeIndex++;
-        renderNarrative();
-      }else if(narrativeDone){
-        narrativeDone();
+    function nextPage(){
+      if(pageIndex + 1 < pageList.length){
+        pageIndex++;
+        renderPage(pageIndex + 1 === pageList.length ? "進む" : "次へ");
+      }else if(onDone){
+        onDone();
       }
     }
 
     function startGame(){
-      clickSound();
       roomIndex = 0;
-      showNarrative(introPages, () => showRoomIntro(0), "intro");
+      showPages(introPages, () => showRoomIntro(0), "入場する");
     }
 
     function showRoomIntro(index){
@@ -810,163 +712,112 @@
         heading:i === 0 ? r.heading : "展示説明",
         body
       }));
-      showNarrative(pages, renderPuzzle, "roomStory");
+      showPages(pages, renderPuzzle, "謎を見る");
     }
 
     function renderPuzzle(){
-      mode = "puzzle";
       const r = rooms[roomIndex];
-      $("puzzleLabel").textContent = r.label;
-      $("puzzleHeading").textContent = r.heading;
-      $("puzzleStory").innerHTML = r.puzzleStory;
-      $("puzzleQuote").innerHTML = r.quote;
-      $("clueBox").innerHTML = r.clue.map(line => `<div class="line">${line}</div>`).join("");
-      $("instruction").textContent = r.instruction;
-      $("answerInput").value = "";
-      $("answerMsg").textContent = "";
-      $("answerMsg").className = "msg";
-      $("hintBox").textContent = r.hint;
-      $("hintBox").style.display = "none";
-      show("puzzleScreen");
+      setView(`
+        <section class="page">
+          <div class="label">${r.label}</div>
+          <h2 class="heading">${r.heading}</h2>
+          <div class="text">${r.puzzleStory}</div>
+          <div class="bracket">${r.quote}</div>
+          <div class="divider-title">手がかり</div>
+          <div class="clue">${Array.isArray(r.clue) ? r.clue.map(line => `<div class="line">${line}</div>`).join("") : r.clue}</div>
+          <p class="instruction">こたえはひらがなで入力してください。</p>
+          <input class="input" id="answerInput" placeholder="こたえ" autocomplete="off" autocapitalize="off" />
+          <div class="buttons">
+            <button class="btn" onclick="checkAnswer()" type="button">送信する</button>
+            <button class="btn" onclick="toggleHint()" type="button">ヒント</button>
+          </div>
+          <div class="hint" id="hintBox">${r.hint}</div>
+          <div class="msg" id="answerMsg"></div>
+        </section>
+      `);
+    }
+
+    function toggleHint(){
+      const hint = document.getElementById("hintBox");
+      hint.style.display = hint.style.display === "block" ? "none" : "block";
     }
 
     function checkAnswer(){
       const r = rooms[roomIndex];
-      if(normalize($("answerInput").value) === r.answer){
-        okSound();
-        $("answerMsg").textContent = "正解。閲覧済みです。";
-        $("answerMsg").className = "msg ok";
+      const input = document.getElementById("answerInput");
+      const msg = document.getElementById("answerMsg");
+      if(normalize(input.value) === r.answer){
+        msg.textContent = "正解。閲覧済みです。";
+        msg.className = "msg ok";
         setTimeout(() => {
           const pages = r.after.map((body, i) => ({
             label:r.label,
             heading:i === 0 ? "閲覧済み" : "余韻",
             body
           }));
-          showNarrative(pages, () => {
-            if(roomIndex + 1 < rooms.length){
-              showRoomIntro(roomIndex + 1);
-            }else{
-              renderFinal();
-            }
-          }, "after");
-        }, 850);
+          showPages(pages, () => {
+            if(roomIndex + 1 < rooms.length) showRoomIntro(roomIndex + 1);
+            else renderFinal();
+          }, "進む");
+        }, 700);
       }else{
-        ngSound();
-        $("answerMsg").textContent = "まだ違うみたい。手がかりをもう一度見てみてください。";
-        $("answerMsg").className = "msg ng";
+        msg.textContent = "まだ違うみたい。手がかりをもう一度見てみてください。";
+        msg.className = "msg ng";
       }
     }
 
     function renderFinal(){
-      mode = "final";
-      $("collectedList").innerHTML = rooms.map((r,i)=>`<div class="row"><div class="num">${i+1}</div><div class="word">${r.answer}</div></div>`).join("");
-      $("finalInput").value = "";
-      $("finalMsg").textContent = "";
-      $("finalMsg").className = "msg";
-      $("finalHint").style.display = "none";
-      show("finalScreen");
+      setView(`
+        <section class="page">
+          <div class="label">出口</div>
+          <h2 class="heading">出口前の提出箱</h2>
+          <div class="text">
+            <p>六つの展示を見終えると、最初の受付に戻っていた。</p>
+            <p>片目のだるまは、同じ場所にいる。けれど、少しだけ表情が変わったように見えた。</p>
+            <p>受付の横に、学校の職員室前にありそうな古い提出箱が置かれている。</p>
+          </div>
+          <div class="collected">
+            ${rooms.map((r,i)=>`<div class="row"><div class="num">${i+1}</div><div class="word">${r.display}</div></div>`).join("")}
+          </div>
+          <div class="bracket">展示物の名前をひらがなにして、<br>最初の文字を順番に読んでください。</div>
+          <p class="instruction">こたえはひらがなで入力してください。</p>
+          <input class="input" id="finalInput" placeholder="さいごのこたえ" autocomplete="off" autocapitalize="off" />
+          <div class="buttons">
+            <button class="btn full" onclick="checkFinal()" type="button">提出する</button>
+            <button class="btn full" onclick="toggleFinalHint()" type="button">ヒント</button>
+          </div>
+          <div class="hint" id="finalHint">箱、自転車、めがね、留守番電話、台本、消しゴム。ひらがなにして、最初の文字だけを読んでみてください。</div>
+          <div class="msg" id="finalMsg"></div>
+        </section>
+      `);
+    }
+
+    function toggleFinalHint(){
+      const hint = document.getElementById("finalHint");
+      hint.style.display = hint.style.display === "block" ? "none" : "block";
     }
 
     function checkFinal(){
-      if(normalize($("finalInput").value) === "はじめるだけ"){
-        okSound();
-        $("finalMsg").textContent = "提出、受理しました。";
-        $("finalMsg").className = "msg ok";
-        setTimeout(()=>showNarrative(endingPages, () => {
-          mode = "title";
-          show("titleScreen");
-        }, "ending"), 900);
+      const input = document.getElementById("finalInput");
+      const msg = document.getElementById("finalMsg");
+      if(normalize(input.value) === "はじめるだけ"){
+        msg.textContent = "提出、受理しました。";
+        msg.className = "msg ok";
+        setTimeout(() => showPages(endingPages, renderTitle, "タイトルへ"), 750);
       }else{
-        ngSound();
-        $("finalMsg").textContent = "まだ出口は開かないみたい。六つの答えの最初を見てください。";
-        $("finalMsg").className = "msg ng";
+        msg.textContent = "まだ出口は開かないみたい。六つの展示物をひらがなにして、最初の文字を見てください。";
+        msg.className = "msg ng";
       }
     }
 
-    function setupAudio(){
-      if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if(audioCtx.state === "suspended") audioCtx.resume();
-    }
-    function tone(freq,dur=.12,vol=.035,type="sine",delay=0){
-      try{
-        setupAudio();
-        const now = audioCtx.currentTime + delay;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, now);
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(vol, now+.015);
-        gain.gain.exponentialRampToValueAtTime(.0001, now+dur);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now);
-        osc.stop(now+dur+.03);
-      }catch(e){}
-    }
-    function clickSound(){ tone(520,.06,.022,"triangle"); }
-    function okSound(){ tone(523,.1,.035); tone(659,.13,.028,"sine",.08); tone(784,.18,.024,"sine",.17); }
-    function ngSound(){ tone(170,.18,.026,"triangle"); tone(138,.16,.018,"triangle",.12); }
-    function pageSound(){ tone(392,.08,.018); tone(440,.08,.014,"sine",.06); }
+    renderTitle();
 
-    function startBgm(){
-      try{
-        setupAudio();
-        stopBgm();
-        const master = audioCtx.createGain();
-        master.gain.setValueAtTime(.016, audioCtx.currentTime);
-        master.connect(audioCtx.destination);
-        [110,146.83,220].forEach((freq,i)=>{
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = i === 0 ? "sine" : "triangle";
-          osc.frequency.setValueAtTime(freq,audioCtx.currentTime);
-          gain.gain.setValueAtTime(i === 0 ? 0.65 : 0.2, audioCtx.currentTime);
-          osc.connect(gain);
-          gain.connect(master);
-          osc.start();
-          bgmNodes.push(osc,gain);
-        });
-        bgmNodes.push(master);
-      }catch(e){}
-    }
-
-    function stopBgm(){
-      bgmNodes.forEach(n=>{
-        try{ if(n.stop) n.stop(); if(n.disconnect) n.disconnect(); }catch(e){}
-      });
-      bgmNodes = [];
-    }
-    function updateBgmText(){
-      $("bgmText").innerHTML = bgmOn ? "BGM<br>ON" : "BGM<br>OFF";
-    }
-
-    $("startBtn").addEventListener("click", startGame);
-    $("storyNext").addEventListener("click", nextNarrative);
-    $("submitBtn").addEventListener("click", checkAnswer);
-    $("hintBtn").addEventListener("click", () => {
-      clickSound();
-      $("hintBox").style.display = $("hintBox").style.display === "block" ? "none" : "block";
-    });
-    $("finalHintBtn").addEventListener("click", () => {
-      clickSound();
-      $("finalHint").style.display = $("finalHint").style.display === "block" ? "none" : "block";
-    });
-    $("finalSubmit").addEventListener("click", checkFinal);
-    $("bgmBtn").addEventListener("click", () => {
-      bgmOn = !bgmOn;
-      updateBgmText();
-      if(bgmOn){ startBgm(); clickSound(); }
-      else{ stopBgm(); }
-    });
-    document.addEventListener("keydown", (e)=>{
+    document.addEventListener("keydown", (e) => {
       if(e.key === "Enter"){
-        if(mode === "puzzle") checkAnswer();
-        if(mode === "final") checkFinal();
+        if(document.getElementById("answerInput")) checkAnswer();
+        if(document.getElementById("finalInput")) checkFinal();
       }
     });
-
-    updateBgmText();
   </script>
 </body>
 </html>
